@@ -1,0 +1,21 @@
+networks:
+ default:
+   name: honeypothabor_internal
+   external: false
+
+services:
+  postgresql:
+    image: postgres:14
+    container_name: heattracker_postgresql
+    ports:
+      - ${POSTGRES_PORT}:5432
+    environment:
+      - POSTGRES_DB=${POSTGRES_NAME}
+      - POSTGRES_USER=${POSTGRES_ADMIN_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_ADMIN_PASS}
+    volumes:
+      - postgresql:/var/lib/postgresql/data
+
+
+volumes:
+  postgresql:
