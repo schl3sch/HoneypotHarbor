@@ -1,3 +1,7 @@
+networks:
+  honeypotharbor-internal-network:
+    driver: bridge
+
 services:
   postgres:
     image: postgres:14
@@ -9,6 +13,8 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_ADMIN_PASS}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - honeypotharbor-internal-network
 
   elasticsearch:
     image: elasticsearch:9.1.2
@@ -21,6 +27,8 @@ services:
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     volumes:
       - es_data:/usr/share/elasticsearch/data
+    networks:
+      - honeypotharbor-internal-network
 
   logstash:
     image: logstash:9.1.2
@@ -34,6 +42,8 @@ services:
       - elasticsearch
     expose:
       - "5044"
+    networks:
+      - honeypotharbor-internal-network
 
   backend:
     build: ./backend
@@ -42,6 +52,8 @@ services:
       - elasticsearch
     expose:
       - "8080"
+    networks:
+      - honeypotharbor-internal-network
 
   frontend:
     build: ./frontend
@@ -49,6 +61,8 @@ services:
       - backend
     expose:
       - "80"
+    networks:
+      - honeypotharbor-internal-network
 
   nginx:
     image: nginx:alpine
@@ -61,6 +75,8 @@ services:
       - frontend
       - backend
       - logstash
+    networks:
+      - honeypotharbor-internal-network
 
 volumes:
   postgres_data:

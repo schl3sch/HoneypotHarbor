@@ -1,0 +1,28 @@
+networks:
+  honeypotharbor-attacker-network:
+    external: true
+
+services:
+  cowrie1:
+    image: cowrie/cowrie
+    container_name: honeypotharbor-cowrie-1
+    ports: 
+      - 22:22
+    networks:
+      - honeypotharbor-attacker-network  
+
+  cowrie2:
+    image: cowrie/cowrie
+    container_name: honeypotharbor-cowrie-2
+    ports: 
+      - 2222:22
+    networks:
+      - honeypotharbor-attacker-network 
+
+  cowrie3:
+    image: cowrie/cowrie
+    container_name: honeypotharbor-cowrie-3
+    ports: 
+      - 2223:22
+    networks:
+      - honeypotharbor-attacker-network 
