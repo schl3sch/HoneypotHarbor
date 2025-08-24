@@ -1,11 +1,34 @@
 #!/bin/bash
 
 echo "Create Networks:"
-docker network create honeypotharbor-internal-network
-docker network create honeypotharbor-attacker-network
+docker network create -d macvlan \
+  --subnet=192.168.1.0/25 \
+  --gateway=192.168.1.1 \
+  --aux-address 'host=192.168.1.126' \
+  -o parent=eth0 \
+  honeypotharbor-internal-network 
+
+docker network create -d macvlan \
+  --subnet=192.168.1.128/25 \
+  --gateway=192.168.1.129 \
+  --aux-address 'host=192.168.1.250' \
+  -o parent=eth0 \
+  honeypotharbor-attacker-network
+
+echo "Create internal Macvlan shim for Host-access:"
+sudo ip link add internal-net link eth0 type macvlan mode bridge
+sudo ip addr add 192.168.1.126/25 dev internal-net 
+sudo ip link set internal-net up
+sudo ip route add 192.168.1.0/25 dev internal-net
+
+echo "Create attacker Macvlan shim for Host-access:"
+sudo ip link add attacker-net link eth0 type macvlan mode bridge
+sudo ip addr add 192.168.1.254/25 dev attacker-net
+sudo ip link set attacker-net up
+sudo ip route add 192.168.1.128/25 dev attacker-net
 
 echo "Startup Internal Network:"
-docker compose -f internal-net/docker-compose.yml --env-file internal-net/internal.env up --scale backend=3 --scale logstash=3 --scale frontend=2 -d
+docker compose -f internal-net/docker-compose.yml --env-file internal-net/internal.env up -d
 
 echo "Startup Attacker Network:"
 docker compose -f attacker-net/docker-compose.yml --env-file attacker-net/attacker.env up -d

@@ -6,23 +6,26 @@ services:
   cowrie1:
     image: cowrie/cowrie
     container_name: honeypotharbor-cowrie-1
-    ports: 
-      - 22:22
+    #ports: 
+    # - "22:22"
     networks:
-      - honeypotharbor-attacker-network  
+      honeypotharbor-attacker-network:
+        ipv4_address: 192.168.1.131
 
   cowrie2:
     image: cowrie/cowrie
     container_name: honeypotharbor-cowrie-2
-    ports: 
-      - 2222:22
+    #ports: 
+    # - "22:22"
     networks:
-      - honeypotharbor-attacker-network 
+      honeypotharbor-attacker-network:
+        ipv4_address: 192.168.1.132
 
   cowrie3:
     image: cowrie/cowrie
     container_name: honeypotharbor-cowrie-3
-    ports: 
-      - 2223:22
+    #ports: 
+    # - "22:22"
     networks:
-      - honeypotharbor-attacker-network 
+      honeypotharbor-attacker-network:
+        ipv4_address: 192.168.1.133

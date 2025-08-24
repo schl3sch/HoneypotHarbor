@@ -13,3 +13,8 @@ services:
       - ELASTICSEARCH_USERNAME=${ELASTIC_USER}
       - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
     command: ["--strict.perms=false"]
+    networks:
+      honeypotharbor-attacker-network:
+        ipv4_address: 192.168.1.140
+      honeypotharbor-internal-network:
+        ipv4_address: 192.168.1.113
