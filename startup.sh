@@ -27,6 +27,14 @@ sudo ip addr add 192.168.1.254/25 dev attacker-net
 sudo ip link set attacker-net up
 sudo ip route add 192.168.1.128/25 dev attacker-net
 
+echo "Prepare Cowrie directories and permissions..."
+for i in 1 2 3; do
+    sudo mkdir -p attacker-net/logs/cowrie$i
+    sudo touch attacker-net/logs/cowrie$i/cowrie.json
+    sudo chown -R $USER:999  attacker-net/logs/ attacker-net/cowrie-etc/
+    sudo chmod -R 775 attacker-net/logs/ attacker-net/cowrie-etc/
+done
+
 echo "Startup Internal Network:"
 docker compose -f internal-net/docker-compose.yml --env-file internal-net/internal.env up -d
 

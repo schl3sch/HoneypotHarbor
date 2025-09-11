@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: honeypot-harbor-backend
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: honeypot
+    password: harbor
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+        hibernate:
+          format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+app:
+  secret-key: f4cfdb07f63e45211a4e915f8190f6ed66a4c98dd6c4d695ef31f0c9820b3252
