@@ -18,3 +18,8 @@ services:
         ipv4_address: 192.168.1.140
       honeypotharbor-internal-network:
         ipv4_address: 192.168.1.113
+    volumes:
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - ../attacker-net/logs/cowrie1:/logs/cowrie1:ro
+      - ../attacker-net/logs/cowrie2:/logs/cowrie2:ro
+      - ../attacker-net/logs/cowrie3:/logs/cowrie3:ro
