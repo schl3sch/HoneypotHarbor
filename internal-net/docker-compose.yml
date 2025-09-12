@@ -38,7 +38,7 @@ services:
     environment:
       - xpack.monitoring.enabled=true
       - ELASTIC_USERNAME=${ELASTIC_USER}
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}dock
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     volumes:
       - ./logstash/pipeline:/usr/share/logstash/pipeline
     depends_on:
