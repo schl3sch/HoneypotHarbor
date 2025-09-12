@@ -11,8 +11,12 @@ filebeat.inputs:
           add_error_key: true
     ignore_older: 0s
 
-output.console:
-  pretty: true
+output.logstash:
+  hosts:
+    - "192.168.1.103:5044"
+    - "192.168.1.104:5044"
+    - "192.168.1.105:5044"
+
 
 processors:
   - add_tags:
