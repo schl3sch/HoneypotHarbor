@@ -9,7 +9,7 @@ import DashboardPage from './components/pages/DashboardPage.vue';
   
 axios.defaults.baseURL = process.env.VUE_APP_API_URL
 axios.interceptors.request.use(function (config) {
-  config.headers['X-Binarybox-Api-Key'] = process.env.VUE_APP_API_KEY;
+  config.headers['X-Api-Key'] = process.env.API_KEY;
   return config;
 });
   
