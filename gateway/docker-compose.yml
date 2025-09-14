@@ -9,9 +9,6 @@ services:
     image: elastic/filebeat:9.1.2
     container_name: honeypotharbor-filebeat-1
     user: root
-#    environment:
-#      - ELASTICSEARCH_USERNAME=${ELASTIC_USER}
-#      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
     command: ["--strict.perms=false"]
     networks:
       honeypotharbor-attacker-network:
