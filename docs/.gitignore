@@ -1,0 +1,30 @@
+# General
+.vscode
+.idea
+_things
+desktop.ini
+.DS_Store
+
+# Tests and benchmarks
+tests/store
+tests/suite/**/*.pdf
+tests/fuzz/target
+tests/fuzz/corpus
+tests/fuzz/artifacts
+tests/fuzz/coverage
+tarpaulin-report.html
+
+# Rust
+/target
+**/*.rs.bk
+
+# Node
+node_modules
+tools/test-helper/dist
+package-lock.json
+
+# Nix
+/result
+.direnv/
+
+**.pdf
