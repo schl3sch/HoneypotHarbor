@@ -3,9 +3,9 @@ spring:
     name: honeypot-harbor-backend
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: honeypot
-    password: harbor
+    url: jdbc:postgresql://192.168.1.101:5432/${POSTGRES_NAME}
+    username: ${POSTGRES_ADMIN_USER}
+    password: ${POSTGRES_ADMIN_PASS}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

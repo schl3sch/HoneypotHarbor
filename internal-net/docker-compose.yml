@@ -94,6 +94,10 @@ services:
     environment:
       - API_KEY=${API_KEY}
       - SECRET_KEY=${SECRET_KEY}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_NAME}
+      - POSTGRES_USER=${POSTGRES_ADMIN_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_ADMIN_PASS}
     networks:
       honeypotharbor-internal-network:
         ipv4_address: 192.168.1.106
@@ -109,6 +113,10 @@ services:
     environment:
       - API_KEY=${API_KEY}
       - SECRET_KEY=${SECRET_KEY}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_NAME}
+      - POSTGRES_USER=${POSTGRES_ADMIN_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_ADMIN_PASS}
     networks:
       honeypotharbor-internal-network:
         ipv4_address: 192.168.1.107
@@ -124,6 +132,10 @@ services:
     environment:
       - API_KEY=${API_KEY}
       - SECRET_KEY=${SECRET_KEY}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_NAME}
+      - POSTGRES_USER=${POSTGRES_ADMIN_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_ADMIN_PASS}
     networks:
       honeypotharbor-internal-network:
         ipv4_address: 192.168.1.108
