@@ -51,10 +51,10 @@ for i in 1 2 3; do
 done
 
 echo "Startup Internal Network."
-docker compose -f internal-net/docker-compose.yml --env-file internal-net/internal.env up -d
+docker compose -f internal-net/docker-compose.yml --env-file internal-net/internal.env up -d --build
 
 echo "Startup Attacker Network."
-docker compose -f attacker-net/docker-compose.yml --env-file attacker-net/attacker.env up -d
+docker compose -f attacker-net/docker-compose.yml --env-file attacker-net/attacker.env up -d --build
 
 echo "Startup Gateway."
 docker compose -f gateway/docker-compose.yml up -d
