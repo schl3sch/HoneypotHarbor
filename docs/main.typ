@@ -14,10 +14,13 @@
 
 
 = Einleitung
+#pagebreak()
 
 = Anforderungen
 == Funktional
 == Nicht Funktional
+
+#pagebreak()
 
 = Architektur & Konzept
 == Allgemeiner Aufbau
@@ -30,15 +33,28 @@
 === Vue JS
 === NGINX
 
+#pagebreak()
+
+
 = Umsetzung
 == Implementierung
+=== Security
+#image("assets/spring-security.png",)
+
+
+#pagebreak()
+
 == Schwierigkeiten & Lösungen
 == Mögliche Alternativen
 
+
+#pagebreak()
 = Reflektion
 == Lessons Learned
 == Herausforderungen
 
+
+#pagebreak()
 = Fazit
 
 #pagebreak()

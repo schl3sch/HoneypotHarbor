@@ -1,5 +1,9 @@
-package com.github.schl3sch.honeypot_harbor_backend.auth;
+package com.github.schl3sch.honeypot_harbor_backend.auth.controller;
 
+import com.github.schl3sch.honeypot_harbor_backend.auth.dto.AuthenticationRequest;
+import com.github.schl3sch.honeypot_harbor_backend.auth.dto.AuthenticationResponse;
+import com.github.schl3sch.honeypot_harbor_backend.auth.service.AuthenticationService;
+import com.github.schl3sch.honeypot_harbor_backend.auth.dto.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

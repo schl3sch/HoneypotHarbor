@@ -1,4 +1,4 @@
-package com.github.schl3sch.honeypot_harbor_backend.auth;
+package com.github.schl3sch.honeypot_harbor_backend.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequest {
-    private String firstname;
-    private String lastname;
+public class AuthenticationRequest {
     private String email;
     private String password;
 }

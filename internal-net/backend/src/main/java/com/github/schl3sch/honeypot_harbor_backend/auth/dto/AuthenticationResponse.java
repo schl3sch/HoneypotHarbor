@@ -1,4 +1,4 @@
-package com.github.schl3sch.honeypot_harbor_backend.auth;
+package com.github.schl3sch.honeypot_harbor_backend.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

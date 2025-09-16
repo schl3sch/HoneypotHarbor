@@ -1,8 +1,11 @@
-package com.github.schl3sch.honeypot_harbor_backend.auth;
+package com.github.schl3sch.honeypot_harbor_backend.auth.service;
 
-import com.github.schl3sch.honeypot_harbor_backend.config.JwtService;
-import com.github.schl3sch.honeypot_harbor_backend.user.Role;
-import com.github.schl3sch.honeypot_harbor_backend.user.User;
+import com.github.schl3sch.honeypot_harbor_backend.auth.dto.AuthenticationRequest;
+import com.github.schl3sch.honeypot_harbor_backend.auth.dto.AuthenticationResponse;
+import com.github.schl3sch.honeypot_harbor_backend.auth.dto.RegisterRequest;
+import com.github.schl3sch.honeypot_harbor_backend.config.security.JwtService;
+import com.github.schl3sch.honeypot_harbor_backend.user.model.Role;
+import com.github.schl3sch.honeypot_harbor_backend.user.model.User;
 import com.github.schl3sch.honeypot_harbor_backend.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;

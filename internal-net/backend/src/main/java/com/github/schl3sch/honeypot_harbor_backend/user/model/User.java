@@ -1,4 +1,4 @@
-package com.github.schl3sch.honeypot_harbor_backend.user;
+package com.github.schl3sch.honeypot_harbor_backend.user.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

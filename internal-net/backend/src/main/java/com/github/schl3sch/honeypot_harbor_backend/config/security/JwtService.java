@@ -1,4 +1,4 @@
-package com.github.schl3sch.honeypot_harbor_backend.config;
+package com.github.schl3sch.honeypot_harbor_backend.config.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
