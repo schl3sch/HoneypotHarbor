@@ -4,6 +4,7 @@ import com.github.schl3sch.honeypot_harbor_backend.auth.dto.AuthenticationReques
 import com.github.schl3sch.honeypot_harbor_backend.auth.dto.AuthenticationResponse;
 import com.github.schl3sch.honeypot_harbor_backend.auth.service.AuthenticationService;
 import com.github.schl3sch.honeypot_harbor_backend.auth.dto.RegisterRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,7 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody RegisterRequest request
+            @RequestBody @Valid RegisterRequest request
     ) {
         return ResponseEntity.ok(service.register(request));
     }

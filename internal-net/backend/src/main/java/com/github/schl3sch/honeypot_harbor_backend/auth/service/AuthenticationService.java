@@ -23,6 +23,15 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request){
+
+        if(repository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email already registered.");
+        }
+
+        if(!request.getPassword().equals(request.getPasswordConfirmation())){
+            throw new IllegalArgumentException("Passwords do not match.");
+        }
+
         var user = User.builder()
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
@@ -30,8 +39,11 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
+
         repository.save(user);
+
         var jwtToken = jwtService.generateToken(user);
+
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();

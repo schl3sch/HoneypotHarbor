@@ -156,13 +156,20 @@ export default {
         },
         confirmPasswordError() {
             if (this.confirmPassword && this.password !== this.confirmPassword) {
-                return 'Passwords do not match';
+                return 'Passwords do not match.';
             }
             return '';
+            
         },
         hasErrors() {
-            return this.emailErrors.length || this.passwordErrors.length || this.confirmPasswordError || 
-            this.firstnameError || this.lastnameError;
+            return Boolean(
+                this.emailErrors.length ||
+                this.passwordErrors.length ||
+                this.confirmPasswordError ||
+                this.firstnameError ||
+                !this.confirmPassword ||
+                this.lastnameError
+            );
         }
     },
     methods: {
@@ -180,7 +187,7 @@ export default {
                 password_confirmation: this.confirmPassword
             };
             
-            axios.post('/v1/auth/register', payload)
+            axios.post('/api/v1/auth/register', payload)
             .then(response => {
                 localStorage.setItem('token', response.data.token);
                 this.$router.push('/dashboard');
