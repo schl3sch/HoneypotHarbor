@@ -13,38 +13,33 @@
 )
 
 
-
 = Einleitung
-@Schmidt2023
 
-#lorem(120)
+= Anforderungen
+== Funktional
+== Nicht Funktional
 
-#lorem(150)
+= Architektur & Konzept
+== Allgemeiner Aufbau
+== Architektonische Entscheidungen
+== Systemkomponenten
+=== Cowrie
+=== Filebeat, Logstash, Elastic Search
+=== Springboot
+=== PostgreSQL
+=== Vue JS
+=== NGINX
 
-== Fluggeräte
+= Umsetzung
+== Implementierung
+== Schwierigkeiten & Lösungen
+== Mögliche Alternativen
 
-#lorem(100)
+= Reflektion
+== Lessons Learned
+== Herausforderungen
 
-=== Raketen – Eine Übersicht
-
-#lorem(80)
-
-= Dein erster Raketenstart
-
-#lorem(150)
-
-== Wie du in die Rakete einsteigst
-
-#lorem(90)
-
-== Das Cockpit
-
-#lorem(120)
-
-
-=== Die wichtigsten Knöpfe und Hebel
-
-#lorem(50)
+= Fazit
 
 #pagebreak()
 #bibliography("bibliograpy.bib")
