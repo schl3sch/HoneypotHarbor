@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.github.schl3sch.honeypot_harbor_backend.user.model.Role;
 import com.github.schl3sch.honeypot_harbor_backend.user.model.User;
@@ -21,16 +22,20 @@ public class DataInitializer {
     @Bean
     CommandLineRunner initAdmin() {
         return args -> {
-            if (userRepository.findByEmail("admin").isEmpty()) {
-                User admin = User.builder()
-                        .firstname("Admin")
-                        .lastname("Admin")
-                        .email("admin")
-                        .password(passwordEncoder.encode(adminPassword))
-                        .role(Role.ADMIN)
-                        .build();
+            User admin = User.builder()
+                    .firstname("Admin")
+                    .lastname("Admin")
+                    .email("admin")
+                    .password(passwordEncoder.encode(adminPassword))
+                    .role(Role.ADMIN)
+                    .build();
+
+            try {
                 userRepository.save(admin);
-                System.out.println("Initial ADMIN user created: username=admin, password=admin");
+                System.out.println("Initial ADMIN user created.");
+            } catch (DataIntegrityViolationException e) {
+                // Admin already exists, safe to ignore
+                System.out.println("Admin user already exists, skipping creation.");
             }
         };
     }

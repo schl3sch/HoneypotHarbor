@@ -27,7 +27,8 @@ public class AuthenticationService {
         if(repository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Email already registered.");
         }
-
+        System.out.println("Password: " + request.getPassword());
+        System.out.println("Password Confirmation: " + request.getPasswordConfirmation());
         if(!request.getPassword().equals(request.getPasswordConfirmation())){
             throw new IllegalArgumentException("Passwords do not match.");
         }

@@ -41,10 +41,12 @@
 === Security
 #image("assets/spring-security.png",)
 
-
-#pagebreak()
-
 == Schwierigkeiten & Lösungen
+- vue - nginx SPA
+- Multi-instance DB schema race condition 
+- Race Condition beim gleichzeitigen Schreiben in die Datenbank.
+- macvlan veth interface
+- macvlan shim net
 == Mögliche Alternativen
 
 

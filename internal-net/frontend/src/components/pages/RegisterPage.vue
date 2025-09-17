@@ -184,7 +184,7 @@ export default {
                 lastname:this.lastname,
                 email: this.email,
                 password: this.password,
-                password_confirmation: this.confirmPassword
+                passwordConfirmation: this.confirmPassword
             };
             
             axios.post('/api/v1/auth/register', payload)

@@ -13,6 +13,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_ADMIN_PASS}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./postgres:/docker-entrypoint-initdb.d
     networks:
       honeypotharbor-internal-network:
         ipv4_address: 192.168.1.101
@@ -92,7 +93,7 @@ services:
     #ports: 
     # - "8080:8080"
     environment:
-      - API_KEY=${API_KEY}
+      - API_KEY=${VUE_APP_API_KEY}
       - SECRET_KEY=${SECRET_KEY}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - POSTGRES_DB=${POSTGRES_NAME}
@@ -111,7 +112,7 @@ services:
     #ports: 
     # - "8080:8080"
     environment:
-      - API_KEY=${API_KEY}
+      - API_KEY=${VUE_APP_API_KEY}
       - SECRET_KEY=${SECRET_KEY}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - POSTGRES_DB=${POSTGRES_NAME}
@@ -130,7 +131,7 @@ services:
     #ports: 
     # - "8080:8080"
     environment:
-      - API_KEY=${API_KEY}
+      - API_KEY=${VUE_APP_API_KEY}
       - SECRET_KEY=${SECRET_KEY}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - POSTGRES_DB=${POSTGRES_NAME}
@@ -149,9 +150,6 @@ services:
       - backend-3
     #ports: 
     # - "80:80"
-    environment:
-      - API_KEY=${API_KEY}
-      - VUE_APP_API_URL=${VUE_APP_API_URL}
     networks:
       honeypotharbor-internal-network:
         ipv4_address: 192.168.1.109
@@ -165,9 +163,6 @@ services:
       - backend-3
     #ports: 
     # - "80:80"
-    environment:
-      - API_KEY=${API_KEY}
-      - VUE_APP_API_URL=${VUE_APP_API_URL}
     networks:
       honeypotharbor-internal-network:
         ipv4_address: 192.168.1.110
@@ -181,9 +176,6 @@ services:
       - backend-3
     #ports: 
     # - "80:80"
-    environment:
-      - API_KEY=${API_KEY}
-      - VUE_APP_API_URL=${VUE_APP_API_URL}
     networks:
       honeypotharbor-internal-network:
         ipv4_address: 192.168.1.111

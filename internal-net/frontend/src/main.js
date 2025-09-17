@@ -7,9 +7,9 @@ import LoginPage from './components/pages/LoginPage.vue';
 import RegisterPage from './components/pages/RegisterPage.vue';
 import DashboardPage from './components/pages/DashboardPage.vue';
   
-axios.defaults.baseURL = process.env.VUE_APP_API_URL
+axios.defaults.baseURL = ""
 axios.interceptors.request.use(function (config) {
-  config.headers['X-Api-Key'] = process.env.API_KEY;
+  config.headers['X-Api-Key'] = import.meta.env.VITE_API_KEY;
   return config;
 });
   
