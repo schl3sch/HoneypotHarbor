@@ -9,7 +9,8 @@ set -e
 echo "Stopping Gateway."
 docker compose -f gateway/docker-compose.yml down
 
-echo "Stopping Attacker Network:.
+
+echo "Stopping Attacker Network."
 docker compose -f attacker-net/docker-compose.yml --env-file attacker-net/attacker.env down
 
 echo "Stopping Internal Network."
