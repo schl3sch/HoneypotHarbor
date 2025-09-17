@@ -1,6 +1,5 @@
 package com.github.schl3sch.honeypot_harbor_backend.token.model;
 
-import com.github.schl3sch.honeypot_harbor_backend.token.TokenType;
 import com.github.schl3sch.honeypot_harbor_backend.user.model.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

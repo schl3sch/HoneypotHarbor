@@ -2,7 +2,6 @@ package com.github.schl3sch.honeypot_harbor_backend.config.security;
 
 import com.github.schl3sch.honeypot_harbor_backend.config.security.filter.ApiKeyFilter;
 import com.github.schl3sch.honeypot_harbor_backend.config.security.filter.JwtAuthenticationFilter;
-import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

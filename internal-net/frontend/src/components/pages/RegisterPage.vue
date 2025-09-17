@@ -7,6 +7,7 @@
                         <h5 class="card-title mb-4">Register</h5>
                         <form>
                             <div class="mb-3">
+                                <p v-if="Object.keys(validationErrors).length != 0" class='text-center '><small class='text-danger'>Something went Wrong.</small></p>
                                 <label htmlFor="firstname" class="form-label">First Name</label>
                                 <input 
                                 type="text"
@@ -193,10 +194,14 @@ export default {
                 this.$router.push('/dashboard');
             })
             .catch(error => {
-                this.isSubmitting = false;
-                if (error.response?.data?.errors) {
-                    this.validationErrors = error.response.data.errors;
+                this.isSubmitting = false
+                if (error.response.data.errors != undefined) {
+                    this.validationErrors = error.response.data.errors
                 }
+                if (error.response.data.error != undefined) {
+                    this.validationErrors = error.response.data.error
+                }
+                return error
             });
         }
     },

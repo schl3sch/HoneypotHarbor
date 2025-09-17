@@ -36,7 +36,7 @@
                     </div>
                     <div class="d-grid gap-2">
                         <button 
-                        :disabled="isSubmitting"
+                        :disabled="isSubmitting || password.length < 1" 
                         @click="loginAction()"
                         type="button"
                         class="btn btn-primary btn-block">Login</button>

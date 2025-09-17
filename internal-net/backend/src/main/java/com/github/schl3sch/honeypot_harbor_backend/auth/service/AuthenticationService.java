@@ -5,7 +5,7 @@ import com.github.schl3sch.honeypot_harbor_backend.auth.dto.AuthenticationRespon
 import com.github.schl3sch.honeypot_harbor_backend.auth.dto.RegisterRequest;
 import com.github.schl3sch.honeypot_harbor_backend.config.security.JwtService;
 import com.github.schl3sch.honeypot_harbor_backend.token.TokenRepository;
-import com.github.schl3sch.honeypot_harbor_backend.token.TokenType;
+import com.github.schl3sch.honeypot_harbor_backend.token.model.TokenType;
 import com.github.schl3sch.honeypot_harbor_backend.token.model.Token;
 import com.github.schl3sch.honeypot_harbor_backend.user.model.Role;
 import com.github.schl3sch.honeypot_harbor_backend.user.model.User;
@@ -27,12 +27,18 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
+        if(repository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email already registered.");
+        }
+        if(!request.getPassword().equals(request.getPasswordConfirmation())){
+            throw new IllegalArgumentException("Passwords do not match.");
+        }
         var user = User.builder()
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER) // oder request.getRole(), wenn du es dynamisch willst
+                .role(Role.USER)
                 .build();
 
         var savedUser = repository.save(user);
@@ -45,14 +51,17 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()
                 )
         );
+
         var user = repository.findByEmail(request.getEmail())
                 .orElseThrow();
+
         var jwtToken = jwtService.generateToken(user);
 
         revokeAllUserTokens(user);
