@@ -1,8 +1,9 @@
-package com.github.schl3sch.honeypot_harbor_backend.user;
+package com.github.schl3sch.honeypot_harbor_backend.user.service;
 
 import com.github.schl3sch.honeypot_harbor_backend.auth.dto.AuthenticationResponse;
 import com.github.schl3sch.honeypot_harbor_backend.auth.service.AuthenticationService;
 import com.github.schl3sch.honeypot_harbor_backend.config.security.JwtService;
+import com.github.schl3sch.honeypot_harbor_backend.user.UserRepository;
 import com.github.schl3sch.honeypot_harbor_backend.user.model.User;
 import com.github.schl3sch.honeypot_harbor_backend.user.dto.ChangePasswordRequest;
 import lombok.RequiredArgsConstructor;

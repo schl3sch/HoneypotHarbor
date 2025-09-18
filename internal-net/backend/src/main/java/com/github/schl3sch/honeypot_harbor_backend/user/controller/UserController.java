@@ -1,7 +1,7 @@
 package com.github.schl3sch.honeypot_harbor_backend.user.controller;
 
 import com.github.schl3sch.honeypot_harbor_backend.auth.dto.AuthenticationResponse;
-import com.github.schl3sch.honeypot_harbor_backend.user.UserService;
+import com.github.schl3sch.honeypot_harbor_backend.user.service.UserService;
 import com.github.schl3sch.honeypot_harbor_backend.user.dto.ChangePasswordRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
