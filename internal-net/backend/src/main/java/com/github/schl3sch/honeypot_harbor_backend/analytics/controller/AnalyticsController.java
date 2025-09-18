@@ -6,6 +6,7 @@ import com.github.schl3sch.honeypot_harbor_backend.analytics.dto.StatisticsRespo
 import com.github.schl3sch.honeypot_harbor_backend.analytics.service.AnalyticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/analytics")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
 public class AnalyticsController {
     private final AnalyticsService service;
 
