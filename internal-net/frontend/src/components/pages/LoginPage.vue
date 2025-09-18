@@ -90,13 +90,19 @@ export default {
             })
             .catch(error => {
                 this.isSubmitting = false
-                if (error.response.data.errors != undefined) {
-                    this.validationErrors = error.response.data.errors
+                if (error.response.status === 403 && error.response.data.message === "Initial admin must change password") {
+                    this.$router.push({
+                        name: 'ChangePassword',
+                        query: { email: this.email }
+                    });
+                    return;
                 }
-                if (error.response.data.error != undefined) {
-                    this.validationErrors = error.response.data.error
+
+                if (error.response.data.errors) {
+                    this.validationErrors = error.response.data.errors;
+                } else if (error.response.data.error) {
+                    this.validationErrors = error.response.data.error;
                 }
-                return error
             });
         }
     },
