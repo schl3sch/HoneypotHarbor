@@ -1,14 +1,44 @@
 filebeat.inputs:
   - type: filestream
+    id: cowrie-1
     enabled: true
     paths:
       - /logs/cowrie1/cowrie.json
+    parsers:
+      - ndjson:
+          keys_under_root: true
+          add_error_key: true
+    fields:
+      honeypot_id: cowrie-1
+    fields_under_root: true
+    ignore_older: 0s
+
+  - type: filestream
+    id: cowrie-2
+    enabled: true
+    paths:
       - /logs/cowrie2/cowrie.json
+    parsers:
+      - ndjson:
+          keys_under_root: true
+          add_error_key: true
+    fields:
+      honeypot_id: cowrie-2
+    fields_under_root: true
+    ignore_older: 0s
+
+  - type: filestream
+    id: cowrie-3
+    enabled: true
+    paths:
       - /logs/cowrie3/cowrie.json
     parsers:
       - ndjson:
           keys_under_root: true
           add_error_key: true
+    fields:
+      honeypot_id: cowrie-3
+    fields_under_root: true
     ignore_older: 0s
 
 output.logstash:
