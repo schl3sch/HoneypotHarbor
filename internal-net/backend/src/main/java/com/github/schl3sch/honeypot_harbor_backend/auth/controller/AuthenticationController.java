@@ -8,10 +8,7 @@ import com.github.schl3sch.honeypot_harbor_backend.auth.dto.RegisterRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -33,6 +30,15 @@ public class AuthenticationController {
     ) {
         return ResponseEntity.ok(service.authenticate(request));
     }
+
+    @GetMapping("/check-change-password")
+    public ResponseEntity<String> checkChangePassword(
+            @RequestParam String email
+    ) {
+        service.checkIfInitialAdmin(email);
+        return ResponseEntity.ok("Password change required");
+    }
+
 
     @PostMapping("/change/password")
     public ResponseEntity<AuthenticationResponse> changePassword(

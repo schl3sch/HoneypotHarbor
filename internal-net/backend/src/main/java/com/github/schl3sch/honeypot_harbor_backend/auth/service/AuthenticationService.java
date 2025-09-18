@@ -79,6 +79,15 @@ public class AuthenticationService {
                 .build();
     }
 
+    public void checkIfInitialAdmin(String email) {
+        var user = repository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+
+        if (!"admin".equals(user.getEmail()) || !passwordEncoder.matches("admin", user.getPassword())) {
+            throw new IllegalStateException("Access denied");
+        }
+    }
+
     public AuthenticationResponse changeInitialAdminPassword(ChangeInitialAdminPasswordRequest request) {
 
         var user = repository.findByEmail(request.getEmail())
