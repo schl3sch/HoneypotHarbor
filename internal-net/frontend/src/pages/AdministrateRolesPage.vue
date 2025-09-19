@@ -42,7 +42,7 @@
 import axios from 'axios';
 import Layout from '../components/Layout.vue';
 export default {
-    name: 'RolesPage',
+    name: 'AdministrateRolesPage',
     components: { Layout },
   data() {
     return {

@@ -1,6 +1,6 @@
 <template>
     <layout>
-        <h2>Access</h2>
+        <h2>Settings</h2>
     </layout>
 </template>
 
@@ -8,7 +8,7 @@
 import axios from 'axios';
 import Layout from '../components/Layout.vue';
 export default {
-    name: 'AccessPage',
+    name: 'SettingsPage',
     components: { Layout },
     data() {
     },

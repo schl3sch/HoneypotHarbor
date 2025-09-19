@@ -9,8 +9,8 @@ import DashboardPage from './pages/DashboardPage.vue';
 import ChangePasswordPage from './pages/ChangePassword.vue';
 import HoneypotsPage from './pages/HoneypotsPage.vue'
 import AlertsPage from './pages/AlertsPage.vue'
-import RolesPage from './pages/RolesPage.vue'
-import AccessPage from './pages/AccessPage.vue'
+import AdministrateRolesPage from './pages/AdministrateRolesPage.vue'
+import SettingsPage from './pages/SettingsPage.vue'
 
 
 axios.defaults.baseURL = ""
@@ -29,8 +29,8 @@ const router = createRouter({
 		{ path: '/change-password', component: ChangePasswordPage },
 		{ path: '/honeypots', component: HoneypotsPage },
     	{ path: '/alerts', component: AlertsPage },
-    	{ path: '/roles', component: RolesPage },
-    	{ path: '/access', component: AccessPage },
+    	{ path: '/roles', component: AdministrateRolesPage },
+    	{ path: '/settings', component: SettingsPage },
 	],
 });
 
