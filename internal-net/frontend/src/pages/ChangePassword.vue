@@ -67,7 +67,7 @@
 
 <script>
 import axios from 'axios';
-import LayoutDiv from '../LayoutDiv.vue';
+import LayoutDiv from '../components/LayoutDiv.vue';
 
 export default {
     name: 'ChangePasswordPage',
