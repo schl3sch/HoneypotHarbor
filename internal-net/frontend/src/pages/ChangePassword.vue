@@ -50,7 +50,7 @@
                             
                             <div class="d-grid gap-2">
                                 <button 
-                                :disabled="isSubmitting || newPassword.length < 1 || confirmationPassword.length < 1" 
+                                :disabled="isSubmitting || hasErrors" 
                                 type="submit"
                                 class="btn btn-primary btn-block">
                                 Change Password

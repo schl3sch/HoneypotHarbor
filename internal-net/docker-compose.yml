@@ -211,6 +211,8 @@ services:
     #  - "5044:5044" # external access to logstash
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
+    environment:
+      - API_KEY=${VUE_APP_API_KEY}
     depends_on:
       - frontend-1
       - frontend-2

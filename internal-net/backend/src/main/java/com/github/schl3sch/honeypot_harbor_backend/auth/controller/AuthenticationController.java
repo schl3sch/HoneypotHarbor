@@ -39,7 +39,6 @@ public class AuthenticationController {
         return ResponseEntity.ok("Password change required");
     }
 
-
     @PostMapping("/change/password")
     public ResponseEntity<AuthenticationResponse> changePassword(
             @RequestBody ChangeInitialAdminPasswordRequest request

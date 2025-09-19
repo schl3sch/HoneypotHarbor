@@ -27,7 +27,7 @@ public class DataInitializer {
                     .lastname("Admin")
                     .email("admin")
                     .password(passwordEncoder.encode(adminPassword))
-                    .role(Role.ADMIN)
+                    .role(Role.ROLE_ADMIN)
                     .build();
 
             try {
