@@ -1,5 +1,5 @@
 <template>
-  <layout-div>
+    <layout-div>
         <div class="row justify-content-md-center mt-5">
             <div class="col-4">
                 <div class="card">
@@ -36,7 +36,7 @@
                     </div>
                     <div class="d-grid gap-2">
                         <button 
-                        :disabled="isSubmitting || password.length < 1" 
+                        :disabled="isSubmitting || password.length < 1 || email.length < 1" 
                         @click="loginAction()"
                         type="button"
                         class="btn btn-primary btn-block">Login</button>
@@ -55,7 +55,7 @@
 
 <script>
 import axios from 'axios';
-import LayoutDiv from '../LayoutDiv.vue';
+import LayoutDiv from '../components/LayoutDiv.vue';
 
 export default {
     name: 'LoginPage',
@@ -76,29 +76,37 @@ export default {
         }
     },
     methods: {
-        loginAction(){
-            this.isSubmitting = true
+        loginAction() {
+            this.isSubmitting = true;
             let payload = {
                 email: this.email,
                 password: this.password,
-            }
+            };
             axios.post('/api/v1/auth/authenticate', payload)
             .then(response => {
-                localStorage.setItem('token', response.data.token)
-                this.$router.push('/dashboard')
-                return response
+                if (response.data.token) {
+                    localStorage.setItem('token', response.data.token);
+                    this.$router.push('/dashboard');
+                }
             })
             .catch(error => {
-                this.isSubmitting = false
-                if (error.response.data.errors != undefined) {
-                    this.validationErrors = error.response.data.errors
+                this.isSubmitting = false;
+                
+                if (error.response?.status === 403 && error.response?.data?.message === "Initial admin must change password.") {
+                    this.$router.push({ path: '/change-password', query: { email: this.email } });
+                    return;
                 }
-                if (error.response.data.error != undefined) {
-                    this.validationErrors = error.response.data.error
+                
+                if (error.response?.data?.errors) {
+                    this.validationErrors = error.response.data.errors;
+                } else if (error.response?.data?.error) {
+                    this.validationErrors = error.response.data.error;
+                } else {
+                    this.validationErrors = { general: 'Unexpected error occurred' };
                 }
-                return error
             });
         }
-    },
+    }
+    
 };
 </script>
