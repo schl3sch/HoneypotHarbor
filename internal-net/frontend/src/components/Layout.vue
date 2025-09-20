@@ -8,7 +8,7 @@
       <side-nav :show="showSidebar" class="sidebar" />
 
       <!-- Main Content -->
-      <div :class="['flex-grow-1', { 'ms-250': showSidebar, 'pt-3': showSidebar }]"> <!-- Dynamischer Abstand -->
+      <div :class="['flex-grow-1', { 'margin-left: 250px': showSidebar, 'pt-3': showSidebar }]"> <!-- Dynamischer Abstand -->
         <div class="container-fluid mt-3">
           <slot></slot>
         </div>
@@ -43,9 +43,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.ms-250 {
-  margin-left: 250px; 
-}
-</style>

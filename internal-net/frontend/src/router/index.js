@@ -35,12 +35,20 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  // get Token
+
+  // route user to login page when there is not token + user not already on register/login page
   if (!auth.token && !['/login', '/register'].includes(to.path)) {
     return next('/login')
   }
-  // get Role
-  if (!auth.role && auth.token) {
+
+  // check if the auth Token is expired if yes than logout (remove the token) 
+  if (auth.token && auth.isTokenExpired()) {
+    auth.logout(router)
+    return next('/login')
+  }
+
+  // update Role if there is a token but not a role
+  if (auth.token && !auth.role) {
     await auth.refreshRole()
   }
 
