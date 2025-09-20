@@ -1,5 +1,5 @@
 <template>
-  <layout>
+  <Layout>
     <h2>Administration</h2>
 
     <table class="table table-striped">
@@ -43,81 +43,77 @@
         </tr>
       </tbody>
     </table>
-  </layout>
+  </Layout>
 </template>
 
 <script>
-import axios from "axios";
-import Layout from "../components/Layout.vue";
+import { ref, onMounted } from 'vue'
+import Layout from '../components/Layout.vue'
+import axios from 'axios'
+import { auth } from '../store/auth.js'
+import { useRouter } from 'vue-router'
 
 export default {
-  name: "AdministrateRolesPage",
+  name: 'AdministrateRolesPage',
   components: { Layout },
-  data() {
-    return {
-      users: [],
-      roles: ["ROLE_USER", "ROLE_ANALYST", "ROLE_ADMIN"],
-    };
-  },
-  created() {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      this.$router.push("/");
-    } else {
-      this.checkIfAdmin(token);
-    }
-  },
-  methods: {
-    checkIfAdmin(token) {
-      axios
-        .get("/api/v1/users/role", {
-          headers: { Authorization: `Bearer ${token}` },
-          
+  setup() {
+    const router = useRouter()
+    const users = ref([])
+    const roles = ['ROLE_USER', 'ROLE_ANALYST', 'ROLE_ADMIN']
+
+    const loadUsers = async () => {
+      try {
+        const res = await axios.get('/api/v1/admin/users', {
+          headers: { Authorization: `Bearer ${auth.token}` }
         })
-        .then((response) => {
-          if (response.data.role !== "ROLE_ADMIN") {
-            this.$router.push("/dashboard");
-          } else {
-            this.loadUsers(token);
-          }
-        })
-        .catch((error) => {
-          console.error("Failed to check role", error);
-          this.$router.push("/dashboard");
-        });
-    },
-    loadUsers(token) {
-      axios
-        .get("/api/v1/admin/users", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => {
-          this.users = response.data;
-        })
-        .catch((error) => console.error("Failed to load users", error));
-    },
-    confirmRoleChange(user, newRole) {
-      if (
-        confirm(`Change role of ${user.firstname} ${user.lastname} to ${newRole}?`)
-      ) {
-        this.changeUserRole(user, newRole);
+        users.value = res.data
+      } catch (err) {
+        console.error('Failed to load users', err)
       }
-    },
-    changeUserRole(user, newRole) {
-      const token = localStorage.getItem("token");
-      axios
-        .put(
-          `/api/v1/admin/users/${user.id}/role`,
-          { role: newRole },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        )
-        .then(() => {
-          user.role = newRole;
+    }
+
+    const checkIfAdmin = async () => {
+      try {
+        const res = await axios.get('/api/v1/users/role', {
+          headers: { Authorization: `Bearer ${auth.token}` }
         })
-        .catch((error) => console.error("Failed to change role", error));
-    },
-  },
-};
+        if (res.data.role !== 'ROLE_ADMIN') {
+          router.push('/dashboard')
+        } else {
+          await loadUsers()
+        }
+      } catch (err) {
+        console.error('Failed to check role', err)
+        router.push('/dashboard')
+      }
+    }
+
+    onMounted(async () => {
+      if (!auth.token) {
+        router.push('/login')
+        return
+      }
+      await checkIfAdmin()
+    })
+
+    const confirmRoleChange = (user, newRole) => {
+      if (confirm(`Change role of ${user.firstname} ${user.lastname} to ${newRole}?`)) {
+        changeUserRole(user, newRole)
+      }
+    }
+
+    const changeUserRole = async (user, newRole) => {
+      try {
+        await axios.put(`/api/v1/admin/users/${user.id}/role`, { role: newRole }, {
+          headers: { Authorization: `Bearer ${auth.token}` }
+        })
+        user.role = newRole
+      } catch (err) {
+        console.error('Failed to change role', err)
+      }
+    }
+
+    return { users, roles, confirmRoleChange }
+  }
+}
 </script>

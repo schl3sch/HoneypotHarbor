@@ -1,21 +1,33 @@
 <template>
-    <layout>
-        <h2>Alerts</h2>
-    </layout>
+  <Layout>
+    <h2>Alerts</h2>
+    <!-- Hier später Alerts-Tabelle oder Inhalte einfügen -->
+  </Layout>
 </template>
 
 <script>
-import axios from 'axios';
-import Layout from '../components/Layout.vue';
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import Layout from '../components/Layout.vue'
+import { auth } from '../store/auth.js'
+
 export default {
-    name: 'AlertPage',
-    components: { Layout },
-    data() {
-    },
-    created() {
-        if(localStorage.getItem('token') == "" || localStorage.getItem('token') == null){
-            this.$router.push('/')
-        }
-    }
+  name: 'AlertsPage',
+  components: { Layout },
+  setup() {
+    const router = useRouter()
+
+    onMounted(() => {
+      // Token prüfen
+      if (!auth.token) {
+        router.push('/login')
+      } else if (!['ROLE_ANALYST', 'ROLE_ADMIN'].includes(auth.role)) {
+        // Nur Analyst/Admin Zugriff
+        router.push('/dashboard')
+      }
+    })
+
+    return {}
+  }
 }
 </script>
