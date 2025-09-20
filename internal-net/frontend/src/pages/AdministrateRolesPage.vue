@@ -20,12 +20,20 @@
           <td>{{ user.role }}</td>
           <td>
             <div class="dropdown">
-              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              <button
+                class="btn btn-secondary dropdown-toggle"
+                type="button"
+                data-bs-toggle="dropdown"
+              >
                 ☰
               </button>
               <ul class="dropdown-menu">
                 <li v-for="roleOption in roles" :key="roleOption">
-                  <a class="dropdown-item" href="#" @click.prevent="confirmRoleChange(user, roleOption)">
+                  <a
+                    class="dropdown-item"
+                    href="#"
+                    @click.prevent="confirmRoleChange(user, roleOption)"
+                  >
                     {{ roleOption }}
                   </a>
                 </li>
@@ -39,66 +47,77 @@
 </template>
 
 <script>
-import axios from 'axios';
-import Layout from '../components/Layout.vue';
+import axios from "axios";
+import Layout from "../components/Layout.vue";
+
 export default {
-    name: 'AdministrateRolesPage',
-    components: { Layout },
+  name: "AdministrateRolesPage",
+  components: { Layout },
   data() {
     return {
       users: [],
-      roles: ['ROLE_USER', 'ROLE_ANALYST', 'ROLE_ADMIN'],
+      roles: ["ROLE_USER", "ROLE_ANALYST", "ROLE_ADMIN"],
     };
   },
   created() {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
-      this.$router.push('/');
+      this.$router.push("/");
     } else {
       this.checkIfAdmin(token);
     }
   },
   methods: {
     checkIfAdmin(token) {
-      axios.get('/api/v1/users/role', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      .then(response => {
-        if (response.data.role !== 'ROLE_ADMIN') {
-          this.$router.push('/dashboard');
-        } else {
-          this.loadUsers(token);
-        }
-      })
-      .catch(error => {
-        console.error('Failed to check role', error);
-        this.$router.push('/dashboard');
-      });
+      axios
+        .get("/api/v1/users/role", {
+          headers: { Authorization: `Bearer ${token}` },
+          
+        })
+        .then((response) => {
+          if (response.data.role !== "ROLE_ADMIN") {
+            this.$router.push("/dashboard");
+          } else {
+            this.loadUsers(token);
+          }
+        })
+        .catch((error) => {
+          console.error("Failed to check role", error);
+          this.$router.push("/dashboard");
+        });
     },
     loadUsers(token) {
-      axios.get('/api/v1/admin/users', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      .then(response => {
-        this.users = response.data;
-      })
-      .catch(error => console.error('Failed to load users', error));
+      axios
+        .get("/api/v1/admin/users", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          this.users = response.data;
+        })
+        .catch((error) => console.error("Failed to load users", error));
     },
     confirmRoleChange(user, newRole) {
-      if (confirm(`Change role of ${user.firstname} ${user.lastname} to ${newRole}?`)) {
+      if (
+        confirm(`Change role of ${user.firstname} ${user.lastname} to ${newRole}?`)
+      ) {
         this.changeUserRole(user, newRole);
       }
     },
     changeUserRole(user, newRole) {
-      const token = localStorage.getItem('token');
-      axios.put(`/api/v1/admin/users/${user.id}/role?role=${newRole}`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      .then(response => {
-        user.role = response.data.role;
-      })
-      .catch(error => console.error('Failed to change role', error));
-    }
-  }
-}
+      const token = localStorage.getItem("token");
+      axios
+        .put(
+          `/api/v1/admin/users/${user.id}/role`,
+          { role: newRole },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        )
+        .then(() => {
+          user.role = newRole;
+        })
+        .catch((error) => console.error("Failed to change role", error));
+    },
+  },
+};
 </script>
