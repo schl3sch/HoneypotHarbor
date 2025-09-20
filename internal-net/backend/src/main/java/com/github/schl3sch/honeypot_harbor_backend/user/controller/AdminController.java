@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -18,8 +18,11 @@ public class AdminController {
     private final AdminService service;
 
     @GetMapping("/users")
-    public List<GetAllUsersResponse> getAllUsers() {
-        return service.getAllUsers();
+    public List<GetAllUsersResponse> getAllUsers(
+            Principal connectedUser
+    ) {
+        String currentUserEmail = connectedUser.getName();
+        return service.getAllUsers(currentUserEmail);
     }
 
     @PutMapping("/users/{id}/role")

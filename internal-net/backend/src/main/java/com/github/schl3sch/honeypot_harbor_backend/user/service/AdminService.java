@@ -17,10 +17,10 @@ public class AdminService {
 
     private final UserRepository repository;
 
-    public List<GetAllUsersResponse> getAllUsers() {
+    public List<GetAllUsersResponse> getAllUsers(String currentUserEmail) {
         return repository.findAll()
                 .stream()
-                .filter(user -> !"admin".equalsIgnoreCase(user.getEmail()))
+                .filter(user -> !currentUserEmail.equalsIgnoreCase(user.getEmail()))
                 .map(user -> GetAllUsersResponse.builder()
                         .id(user.getId())
                         .firstname(user.getFirstname())
