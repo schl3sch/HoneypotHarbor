@@ -17,7 +17,7 @@
           <td>{{ user.firstname }}</td>
           <td>{{ user.lastname }}</td>
           <td>{{ user.email }}</td>
-          <td>{{ user.role }}</td>
+          <td>{{ roleMapping[user.role]}}</td>
           <td>
             <div class="dropdown">
               <button
@@ -34,7 +34,7 @@
                     href="#"
                     @click.prevent="confirmRoleChange(user, roleOption)"
                   >
-                    {{ roleOption }}
+                    {{ roleMapping[roleOption] }}
                   </a>
                 </li>
               </ul>
@@ -60,6 +60,11 @@ export default {
     const router = useRouter()
     const users = ref([])
     const roles = ['ROLE_USER', 'ROLE_ANALYST', 'ROLE_ADMIN']
+    const roleMapping = {
+      ROLE_USER: 'User',
+      ROLE_ANALYST: 'Analyst',
+      ROLE_ADMIN: 'Admin'
+    }
 
     const loadUsers = async () => {
       try {
@@ -113,7 +118,7 @@ export default {
       }
     }
 
-    return { users, roles, confirmRoleChange }
+    return { users, roles, roleMapping, confirmRoleChange }
   }
 }
 </script>
