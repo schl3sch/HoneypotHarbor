@@ -37,7 +37,7 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
     
     // route user to login page when there is not token + user not already on register/login page
-    if (!auth.token && !['/login', '/register'].includes(to.path)) {
+    if (!auth.token && !['/login', '/register', '/change-password'].includes(to.path)) {
         return next('/login')
     }
     

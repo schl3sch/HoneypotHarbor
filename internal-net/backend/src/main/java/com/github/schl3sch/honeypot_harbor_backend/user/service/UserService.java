@@ -20,9 +20,7 @@ public class UserService {
     private final JwtService jwtService;
     private final AuthenticationService authenticationService;
 
-    public AuthenticationResponse changePassword(ChangePasswordRequest request, Principal connectedUser) {
-
-        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+    public AuthenticationResponse changePassword(ChangePasswordRequest request, User user) {
 
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new IllegalStateException("Wrong password");

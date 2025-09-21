@@ -97,11 +97,11 @@ export default {
                 }
                 
             } catch (error) {
-                isSubmitting.value = false
+                isSubmitting.value = false;
                 // when admin logs in with default creds -> needs to change pass
                 if (
-                error.response?.status === 403 &&
-                error.response?.data?.message === "Initial admin must change password."
+                    error.response?.status === 403 &&
+                    error.response?.data?.message === "Initial admin must change password."
                 ) {
                     router.push({ path: '/change-password', query: { email: email.value } })
                     return

@@ -24,7 +24,8 @@ public class UserController {
             @RequestBody ChangePasswordRequest request,
             Principal connectedUser
     ) {
-        var response = service.changePassword(request, connectedUser);
+        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        var response = service.changePassword(request, user);
         return ResponseEntity.ok(response);
     }
 
@@ -32,5 +33,14 @@ public class UserController {
     public ResponseEntity<Map<String, String>> getRole(Principal connectedUser) {
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
         return ResponseEntity.ok(Map.of("role", user.getRole().name()));
+    }
+
+    @GetMapping("/name")
+    public ResponseEntity<Map<String, String>> getName(Principal connectedUser) {
+        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        return ResponseEntity.ok(Map.of(
+                "firstname", user.getFirstname(),
+                "lastname", user.getLastname()
+        ));
     }
 }
