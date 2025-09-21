@@ -146,7 +146,7 @@ export default {
                     newPassword: newPassword.value,
                     confirmationPassword: confirmationPassword.value
                 }
-                const res = await axios.post('/api/v1/auth/change/password', payload, {
+                const res = await axios.post('/api/v1/users/change/password', payload, {
                     headers: { Authorization: `Bearer ${auth.token}` }
                 })
                 
