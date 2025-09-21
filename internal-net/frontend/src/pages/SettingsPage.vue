@@ -1,8 +1,7 @@
 <template>
-  <Layout>
-    <h2>Settings</h2>
-    <!-- Hier später Settings-Formulare oder Inhalte einfügen -->
-  </Layout>
+    <Layout>
+        <h2>Settings</h2>
+    </Layout>
 </template>
 
 <script>
@@ -12,19 +11,18 @@ import Layout from '../components/Layout.vue'
 import { auth } from '../store/auth.js'
 
 export default {
-  name: 'SettingsPage',
-  components: { Layout },
-  setup() {
-    const router = useRouter()
-
-    onMounted(() => {
-      // Token prüfen
-      if (!auth.token) {
-        router.push('/login')
-      }
-    })
-
-    return {}
-  }
+    name: 'SettingsPage',
+    components: { Layout },
+    setup() {
+        const router = useRouter()
+        
+        onMounted(() => {
+            if (!auth.token) {
+                router.push('/login')
+            }
+        })
+        
+        return {}
+    }
 }
 </script>
