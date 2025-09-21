@@ -2,13 +2,11 @@
     <div>
         <!-- Top Bar -->
         <top-bar @toggle-sidebar="toggleSidebar" @logout="handleLogout" />
-        
         <div class="d-flex">
             <!-- Sidebar -->
             <side-nav :show="showSidebar" class="sidebar" />
-            
             <!-- Main Content -->
-            <div :class="['flex-grow-1', { 'margin-left: 250px': showSidebar}]">
+            <div :class="['flex-grow-1', { 'ms-250': showSidebar }]">
                 <div class="container-fluid mt-3">
                     <slot></slot>
                 </div>
@@ -43,3 +41,11 @@ export default {
     }
 }
 </script>
+
+
+<style>
+
+.ms-250 {
+  margin-left: 250px; 
+}
+</style>
