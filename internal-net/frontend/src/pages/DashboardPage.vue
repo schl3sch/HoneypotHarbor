@@ -9,18 +9,24 @@
 </template>
 
 <script>
-import axios from 'axios'
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import Layout from '../components/Layout.vue'
+import { auth } from '../store/auth.js'
 
 export default {
     name: 'DashboardPage',
     components: { Layout },
-    data() {
-    },
-    created() {
-        if(localStorage.getItem('token') == "" || localStorage.getItem('token') == null){
-            this.$router.push('/')
-        }
+    setup() {
+        const router = useRouter()
+        
+        onMounted(() => {
+            if (!auth.token) {
+                router.push('/login')
+            }
+        })
+        
+        return {}
     }
 }
 </script>

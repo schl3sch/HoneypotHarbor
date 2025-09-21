@@ -1,3 +1,4 @@
+<!-- Layout used for Pages which dont need Topbar / SideNav -->
 <template>
     <div class="container">
         <slot></slot>

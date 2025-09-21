@@ -1,19 +1,16 @@
 <template>
-    <Layout>
+    <layout-div>
         <div class="row justify-content-md-center mt-5">
-            <div class="col-6">
+            <div class="col-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title mb-3">
-                            Hello, 
-                            <span v-if="firstname === 'Admin' && lastname === 'Admin'">Admin</span>
-                            <span v-else>{{ firstname }} {{ lastname }}</span>
-                        </h5>
+                        <h5 class="card-title mb-4">Change Password</h5>
+                        
                         <form @submit.prevent="changePassword">
                             <p v-if="Object.keys(validationErrors).length" class="text-center">
                                 <small class="text-danger">Something went wrong.</small>
                             </p>
-                            
+                            <!-- Current Password -->
                             <div class="mb-3">
                                 <label for="currentPassword" class="form-label">Current Password</label>
                                 <input
@@ -21,9 +18,11 @@
                                 type="password"
                                 class="form-control"
                                 id="currentPassword"
+                                name="currentPassword"
                                 />
                             </div>
                             
+                            <!-- New Password -->
                             <div class="mb-3">
                                 <label for="newPassword" class="form-label">New Password</label>
                                 <input
@@ -31,6 +30,7 @@
                                 type="password"
                                 class="form-control"
                                 id="newPassword"
+                                name="newPassword"
                                 />
                                 <div v-if="passwordErrors.length">
                                     <div v-for="(err, idx) in passwordErrors" :key="idx">
@@ -39,6 +39,7 @@
                                 </div>
                             </div>
                             
+                            <!-- Confirm New Password -->
                             <div class="mb-3">
                                 <label for="confirmationPassword" class="form-label">Confirm Password</label>
                                 <input
@@ -46,12 +47,14 @@
                                 type="password"
                                 class="form-control"
                                 id="confirmationPassword"
+                                name="confirmationPassword"
                                 />
                                 <div v-if="confirmationPasswordError">
                                     <small class="text-danger d-block">{{ confirmationPasswordError }}</small>
                                 </div>
                             </div>
                             
+                            <!-- Submit Button -->
                             <div class="d-grid gap-2">
                                 <button
                                 :disabled="isSubmitting || hasErrors"
@@ -66,44 +69,72 @@
             </div>
         </div>
     </div>
-</Layout>
+</layout-div>
 </template>
 
 <script>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import Layout from '../components/Layout.vue'
-import { auth } from '../store/auth'
 import axios from 'axios'
+import LayoutDiv from '../components/LayoutDiv.vue'
+import { useRouter, useRoute } from 'vue-router'
+import { auth } from '../store/auth'
 
 export default {
-    name: 'SettingsPage',
-    components: { Layout },
+    name: 'ChangeInitialAdminPasswordPage',
+    components: { LayoutDiv },
     setup() {
         const router = useRouter()
-        const firstname = ref('')
-        const lastname = ref('')
-        
+        const route = useRoute()
+        const email = ref('')
         const currentPassword = ref('')
         const newPassword = ref('')
         const confirmationPassword = ref('')
         const validationErrors = ref({})
         const isSubmitting = ref(false)
         
-        // Computed validations
+        onMounted(() => {
+            if (localStorage.getItem('token')) {
+                router.push('/dashboard')
+                return
+            }
+            
+            // back to login if there was no email parameter in the url 
+            if (route.query.email) {
+                email.value = route.query.email
+            } else {
+                router.push('/login')
+                return
+            }
+            
+            // check if its still the initial admin password
+            axios
+            .get('/api/v1/auth/check-change-password', {
+                params: { email: email.value }
+            })
+            .catch(() => {
+                router.push('/login')
+            })
+        })
+        
+        // frontend password validation
         const passwordErrors = computed(() => {
             const errors = []
             const pwd = newPassword.value
+            
             if (pwd) {
-                if (pwd.length < 6 || pwd.length > 15) errors.push('Password needs to be between 6-15 characters.')
+                if (pwd.length < 6 || pwd.length > 15) {
+                    errors.push('Password needs to be between 6-15 characters.')
+                }
                 if (!/[a-z]/.test(pwd)) errors.push('Include at least one lowercase letter.')
                 if (!/[A-Z]/.test(pwd)) errors.push('Include at least one uppercase letter.')
                 if (!/\d/.test(pwd)) errors.push('Include at least one number.')
                 if (!/[@.#$!%^&*.?]/.test(pwd)) errors.push('Include at least one special character.')
             }
+            
             return errors
         })
         
+        // confirmation pass needs to be the same as the new pass
         const confirmationPasswordError = computed(() => {
             if (confirmationPassword.value && newPassword.value !== confirmationPassword.value) {
                 return 'Passwords do not match.'
@@ -121,66 +152,49 @@ export default {
             )
         })
         
-        // Load user info
-        const loadUserInfo = async () => {
-            try {
-                const res = await axios.get('/api/v1/users/name', {
-                    headers: { Authorization: `Bearer ${auth.token}` }
-                })
-                firstname.value = res.data.firstname
-                lastname.value = res.data.lastname
-            } catch (err) {
-                console.error('Failed to load user info', err)
-            }
-        }
-        
-        // Change password
+        // send password change api request
         const changePassword = async () => {
             validationErrors.value = {}
+            
             if (hasErrors.value) return
             
             isSubmitting.value = true
             try {
-                const payload = {
+                const response = await axios.post('/api/v1/auth/change/password', {
+                    email: email.value,
                     currentPassword: currentPassword.value,
                     newPassword: newPassword.value,
                     confirmationPassword: confirmationPassword.value
-                }
-                const res = await axios.post('/api/v1/users/change/password', payload, {
-                    headers: { Authorization: `Bearer ${auth.token}` }
                 })
                 
-                if (res.data.token) {
-                    auth.setToken(res.data.token)
+                if (response.data.token) {
+                    auth.setToken(response.data.token)
                 }
+                
                 router.push('/dashboard')
-            } catch (err) {
+
+            } catch (error) {
                 isSubmitting.value = false
-                if (err.response?.data?.errors) validationErrors.value = err.response.data.errors
-                else if (err.response?.data?.error) validationErrors.value = { general: err.response.data.error }
-                else validationErrors.value = { general: 'Unexpected error occurred' }
+                if (error.response?.data?.errors) {
+                    validationErrors.value = error.response.data.errors
+                } else if (error.response?.data?.error) {
+                    validationErrors.value = { general: error.response.data.error }
+                } else {
+                    validationErrors.value = { general: 'Unexpected error occurred' }
+                }
             }
         }
         
-        onMounted(() => {
-            if (!auth.token) {
-                router.push('/login')
-                return
-            }
-            loadUserInfo()
-        })
-        
         return {
-            firstname,
-            lastname,
+            email,
             currentPassword,
             newPassword,
             confirmationPassword,
+            validationErrors,
+            isSubmitting,
             passwordErrors,
             confirmationPasswordError,
             hasErrors,
-            validationErrors,
-            isSubmitting,
             changePassword
         }
     }

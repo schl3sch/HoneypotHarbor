@@ -1,21 +1,30 @@
 <template>
-    <layout>
+    <Layout>
         <h2>Alerts</h2>
-    </layout>
+    </Layout>
 </template>
 
 <script>
-import axios from 'axios';
-import Layout from '../components/Layout.vue';
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import Layout from '../components/Layout.vue'
+import { auth } from '../store/auth.js'
+
 export default {
-    name: 'AlertPage',
+    name: 'AlertsPage',
     components: { Layout },
-    data() {
-    },
-    created() {
-        if(localStorage.getItem('token') == "" || localStorage.getItem('token') == null){
-            this.$router.push('/')
-        }
+    setup() {
+        const router = useRouter()
+        
+        onMounted(() => {
+            if (!auth.token) {
+                router.push('/login')
+            } else if (!['ROLE_ANALYST', 'ROLE_ADMIN'].includes(auth.role)) {
+                router.push('/dashboard')
+            }
+        })
+        
+        return {}
     }
 }
 </script>
