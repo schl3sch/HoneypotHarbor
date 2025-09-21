@@ -21,7 +21,6 @@ export default {
     const router = useRouter()
 
     onMounted(() => {
-      // Token prüfen
       if (!auth.token) {
         router.push('/login')
       }
