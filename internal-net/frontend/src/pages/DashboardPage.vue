@@ -47,25 +47,26 @@
                     </div>
                     
                     <!-- Attacks by Time -->
-                    <div class="card flex-grow-1 d-flex flex-column justify-content-center">
+                    <div class="card flex-grow-1 d-flex flex-column">
                         <div class="card-header text-center">Attacks by Time</div>
-                        <div class="card-body d-flex align-items-center justify-content-center">
-                            <canvas id="attacksChart" style="width:100%;height:100px;"></canvas>
+                        <div class="card-body d-flex justify-content-center" style="height:150px;">
+                            <canvas id="attacksChart"></canvas>
                         </div>
                     </div>
+
                 </div>
                 
                 <!-- Right Column -->
                 <div class="col-lg-7 d-flex flex-column gap-3">
                     <div class="d-flex flex-column flex-grow-1 gap-3">
                         <!-- Map -->
-                        <div class="card flex-grow-1 d-flex flex-column justify-content-center">
-                            <div class="card-header text-center">Map</div>
-                            <div class="card-body p-0">
-                                <div id="attackMap" style="height: 400px; width: 100%;"></div>
-                            </div>
+                        <div class="card flex-grow-1 d-flex flex-column">
+                        <div class="card-header text-center">Map</div>
+                        <div class="card-body p-0 d-flex flex-grow-1">
+                            <div id="attackMap" class="flex-grow-1"></div>
                         </div>
-                        
+                        </div>
+            
                         <!-- Stats Row -->
                         <div class="row g-3">
                             <div class="col-6">
@@ -285,14 +286,18 @@ export default {
                 }
             })
             
-            // initilize map
-            map = L.map('attackMap').setView([20, 0], 2)
+            // initilize map 
+            map = L.map('attackMap').setView([51.1657, 10.4515], 3)
             L.tileLayer(
                 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', 
                 { attribution: '&copy; OpenStreetMap contributors' }
             ).addTo(map)
             markersCluster = L.markerClusterGroup()
             map.addLayer(markersCluster)
+
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 100);
             
             await Promise.all([
                 fetchTopUsernames(),
@@ -329,7 +334,13 @@ export default {
                 { time: '18:00', count: 8 },
                 { time: '21:30', count: 6 },
                 { time: '22:00', count: 4 }
-                ]
+            ]
+
+            if (chartInstance) {
+                chartInstance.data.labels = attacksByTime.value.map(a => a.time)
+                chartInstance.data.datasets[0].data = attacksByTime.value.map(a => a.count)
+                chartInstance.update()
+            }
 
 
             // Realtime Update (Polling)
