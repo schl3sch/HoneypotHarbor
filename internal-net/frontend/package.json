@@ -16,6 +16,8 @@
     "axios": "^1.12.2",
     "bootstrap": "^5.3.8",
     "chart.js": "^4.5.0",
+    "cities.json": "^1.1.50",
+    "leaflet.markercluster": "^1.5.3",
     "vue": "^3.5.18",
     "vue-router": "^4.5.1"
   },

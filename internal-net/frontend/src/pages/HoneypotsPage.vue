@@ -4,7 +4,6 @@
             <h2>Honeypots</h2>
             
             <div class="mb-3">
-                <label for="honeypotSelect" class="form-label">choose Honeypot</label>
                 <select
                 id="honeypotSelect"
                 class="form-select"
