@@ -6,7 +6,8 @@
             <!-- Sidebar -->
             <side-nav :show="showSidebar" class="sidebar" />
             <!-- Main Content -->
-            <div :class="['flex-grow-1', { 'ms-250': showSidebar }]">
+            <div :class="['flex-grow-1']" :style="{ marginLeft: showSidebar ? '250px' : '0', 
+            paddingTop: '70px', paddingLeft: '1rem', paddingRight: '1rem', paddingBottom: '1rem' }">
                 <div class="container-fluid mt-3">
                     <slot></slot>
                 </div>
@@ -41,11 +42,3 @@ export default {
     }
 }
 </script>
-
-
-<style>
-
-.ms-250 {
-  margin-left: 250px; 
-}
-</style>
