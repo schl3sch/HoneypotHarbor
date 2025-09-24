@@ -15,8 +15,11 @@
 
 = Einleitung
 
-#pagebreak()
+Durch die IoT-Revolution ist es für Hacker zunehmend lukrativ geworden, automatisierte Skripte zu entwickeln, die das Internet durchsuchen und versuchen, Geräte zu kompromittieren @Chopra_2020. Unternehmen hingegen werden oft gezielter angegriffen. Sowohl für digital bewusste Privatpersonen als auch für Unternehmen ist es daher interessant, Einblicke in die Vorgehensweise von Angreifern zu gewinnen, um geeignete Schutzmaßnahmen zu implementieren.
 
+Vor diesem Hintergrund wurde im Rahmen der Praxisarbeit der Vorlesung "Verteilte Systeme" entschieden, ein Honeypot-Netzwerk aufzubauen sowie das dazugehörige Monitoring-Netzwerk zu entwickeln. Die Arbeit verfolgt dabei zwei Hauptziele: Ausfallsicherheit und Skalierbarkeit. Gleichzeitig bot das Projekt die Gelegenheit, sich mit neuen Technologien vertraut zu machen und praktische Erfahrungen im Aufbau sicherer und skalierbarer Netzwerkinfrastrukturen zu sammeln.
+
+#pagebreak()
 
 = Anforderungen
 == Funktional
@@ -26,15 +29,20 @@
 - Mehrere Honeypots parallel betreiben.
 
 *Log-Verarbeitung:*
-- Alle Honeypot-Logs automatisch an einen zentralen Sammelpunkt (z. B. Filebeat → Logstash -> Elastic Search) senden.
-- Parsing und Anreicherung mit Nutzung von GeoIP.
+- Alle Honeypot-Logs automatisch an einen zentralen Sammelpunkt senden.
+- Parsing und Anreicherung der Logs mit Nutzung von GeoIP.
 
 *Analysten-Schnittstelle:*
 - Frontend zur Visualisierung mit Hilfe eines Dashboards.
+- Backend-API für Abfragen und Reports.
 
 *Loadbalancer-Funktion:*
 - Verteilung von Nutzeranfragen (Analysten) über mehrere Front- und Backend-Komponenten.
 - Sicherstellung von hoher Verfügbarkeit.
+
+*Rollensystem:*
+- Verschiedene Rollen mit bestimmten Berechtigungen um Zugriffe zu kontrollieren.
+- Ein Admin sollte diese Rollen klar verwalten können.
 
 == Nicht Funktional
 
@@ -47,7 +55,7 @@
 - Einfache Erweiterbarkeit durch Hinzufügen weiterer Honeypots.
 - Erweitrebarkeit des Front und Backends für Lastenverteilung 
 
-*Verfügbarkeit:*
+*Ausfallsicherheit:*
 - Loadbalancer verhindert Single Point of Failure.
 
 #pagebreak()
@@ -57,7 +65,7 @@
 
 #image("assets/honeypotharbor-architecture.png",)
 
-== Architektonische Entscheidungen
+== Architektur Entscheidungen
 
 
 == Systemkomponenten
@@ -78,7 +86,6 @@
 
 == Schwierigkeiten & Lösungen
 - vue - nginx SPA
-- Multi-instance DB schema race condition 
 - Race Condition beim gleichzeitigen Schreiben in die Datenbank.
 - macvlan veth interface
 - macvlan shim net
@@ -94,8 +101,6 @@
 #pagebreak()
 
 = Fazit
-
-@Schmidt2023 so gehen verweise ...
 
 #pagebreak()
 #bibliography("bibliograpy.bib")
