@@ -1,6 +1,7 @@
 <template>
     <Layout>
         <h2>Alerts</h2>
+        <p>Currently under Development</p>
     </Layout>
 </template>
 
