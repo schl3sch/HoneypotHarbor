@@ -63,7 +63,10 @@ Vor diesem Hintergrund wurde im Rahmen der Praxisarbeit der Vorlesung "Verteilte
 = Architektur & Konzept
 == Allgemeiner Aufbau
 
-#image("assets/honeypotharbor-architecture.png",)
+#figure(
+  image("assets/honeypotharbor-architecture.png", width: 100%),
+  caption: [Data Flow Honeypot Harbor],
+) <data-flow>
 
 == Architektur Entscheidungen
 Als Honeypots wurde *Cowrie* (#link("github.com/cowrie/cowrie")) gewählt, da es speziell auf SSH-Angriffe ausgelegt ist und damit besonders gut zur Analyse von Angreifermethoden geeignet ist. IIm Vergleich zu Web-Honeypots wie Glastopf (#link("github.com/mushorg/glastopf")) ist Cowrie deutlich einfacher einzurichten und zu betreiben, insbesondere da bereits ein fertiges Docker-Image verfügbar ist. Außerdem mussten wir den Umfang des Monitorings begrenzen, weshalb die Unterstützung eines einzelnen Honeypot-Typs sinnvoll erschien. Cowrie erlaubt so eine fokussierte Untersuchung von Angriffsmustern bei gleichzeitig überschaubarem Aufwand.
@@ -92,7 +95,36 @@ Als Reverse Proxy und Loadbalancer wurde *NGINX* eingesetzt, da es sich durch ei
 = Umsetzung
 == Implementierung
 === Security
-#image("assets/spring-security.png")
+Die Gewährleistung der Sicherheit und die Verhinderung unautorisierter Datenexfiltration bei der API wurde in Spring Boot durch mehrere Mechanismen umgesetzt. Drei zentrale Maßnahmen werden im Folgenden näher erläutert.
+
+Zunächst wurde ein API-Filter implementiert, der prüft, dass nur Requests mit einem gültigen "X-API-KEY" im Header weitergeleitet werden. Dadurch können ausschließlich autorisierte Clients, die über diesen Schlüssel verfügen, Anfragen an das Backend stellen.
+
+Drauf aufbauend wurde ein weiterer Filter realisiert, der sicherstellt, dass nur Requests mit einem gültigen JWT (JSON Web Token) akzeptiert werden. Auf diese Weise werden alle Endpunkte, die nicht direkt für Login- oder Registrierungsvorgänge zuständig sind, effektiv geschützt. Der JWT-Prozess wird in @spring-jwt abgebildet, welche die Architektur und Funktionsweise veranschaulicht.
+
+#figure(
+  image("assets/spring-security.png", width: 100%),
+  caption: [Spring Security JWT @spring-sec],
+) <spring-jwt>
+
+Als dritte Sicherheitsmaßnahme wurde Role-Based Access Control (RBAC) umgesetzt, die mit Hilfe der Annotation "\@PreAuthorize" in Spring Security implementiert ist. Dadurch können Endpunkte gezielt basierend auf Benutzerrollen geschützt werden. @springMethodSecurity
+
+=== Loadbalancing und Failover
+
+Die Verteilung der Anfragen auf mehrere Frontend- und Backend-Instanzen wurde durch NGINX als Reverse Proxy und Loadbalancer verwirklicht. Im HTTP-Bereich werden die Requests für das Frontend mit Round Robin auf drei Server verteilt, während die Backend-Anfragen mit der "Least Connections Strategie" an drei Spring-Boot-Instanzen weitergeleitet werden. Untersuchungen zeigen, dass Round Robin bei Frontend-Anfragen mit meist ähnlicher Last effizient ist, während Least Connections für Backend-Server mit unterschiedlich großen und variierenden Requests die Antwortzeiten optimiert und die Ressourcennutzung verbessert. @article
+
+Für die Backend Upstream Gruppe sorgt NGINX-Failover dafür, dass Anfragen automatisch auf andere Instanzen weitergeleitet werden, wenn eine Backend-Instanz fehlschlägt oder nicht antwortet:
+```conf
+location /api/ {
+    proxy_pass http://backend;
+    proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+    proxy_next_upstream_tries 3;
+    proxy_connect_timeout 2s;
+    proxy_read_timeout 15s;
+}
+```
+Damit wird die Verfügbarkeit der API auch bei Ausfällen einzelner Backend-Server gewährleistet.
+
+Die Log-Weiterleitung von Filebeat zu Logstash wurde der Stream-Modus von NGINX verwendet, wodurch eingehende TCP-Verbindungen ebenfalls auf mehrere Logstash Instanzen verteilt werden.
 
 === Vue.js Composition API
 
