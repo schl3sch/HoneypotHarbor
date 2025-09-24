@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ###############################################
-#    Shutdown Script for Wifi-only devices    #
+#      Shutdown Script Virtual Ethernet       #
 ###############################################
 
 set -e
