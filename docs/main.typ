@@ -66,14 +66,24 @@ Vor diesem Hintergrund wurde im Rahmen der Praxisarbeit der Vorlesung "Verteilte
 #image("assets/honeypotharbor-architecture.png",)
 
 == Architektur Entscheidungen
+Als Honeypots wurde Cowrie gewählt, da es speziell auf SSH-Angriffe ausgelegt ist und damit besonders gut zur Analyse von Angreifermethoden geeignet ist. IIm Vergleich zu Web-Honeypots wie Glastopf ist Cowrie deutlich einfacher einzurichten und zu betreiben, insbesondere da bereits ein fertiges Docker-Image verfügbar ist. Außerdem mussten wir den Umfang des Monitorings begrenzen, weshalb die Unterstützung eines einzelnen Honeypot-Typs sinnvoll erschien. Cowrie erlaubt so eine fokussierte Untersuchung von Angriffsmustern bei gleichzeitig überschaubarem Aufwand.
 
+Für die Verarbeitung und Analyse der Honeypot-Logs wurden Teile des ELK-Stacks bestehend aus Filebeat, Logstash und Elasticsearch eingesetzt. Zum einen geschah dies aus eigenem Interesse, da der ELK-Stack häufig in Unternehmensumgebungen verwendet wird, zum anderen ermöglicht die "für einanander bestimmte" Zusammenlegung der einzelnen Komponenten eine effiziente Erfassung, Verarbeitung und Strukturierung der Logs innerhalb eines konsistenten Systems.
+
+Das Frontend wurde mit Vue.js umgesetzt, da dieses Framework im Vergleich zu Angular und React besonders einsteigerfreundlich und übersichtlich strukturiert ist. Vue.js ermöglicht eine schnelle Umsetzung von Komponenten bei gleichzeitig geringem Einarbeitungsaufwand, was die Entwicklung effizient gestaltet. Zudem wurden durch positive Erfahrungsberichte aus dem Bekanntenkreis Neugier und Interesse geweckt, während Angular und ähnliche Frameworks aufgrund ihrer Komplexität zunächst eher abschreckend wirkten.
+
+Das Backend wurde mit Spring Boot umgesetzt, da es in Enterprise Umgebungen weit verbreitet ist und damit die Möglichkeit bietet, praktische Erfahrungen zu sammeln sowie Kenntnisse in Java zu vertiefen. Durch das Maven-Plugin-System lässt sich Spring Boot problemlos mit Elasticsearch integrieren, sodass Logs aus dem Honeypot-System effizient verarbeitet und analysiert werden können. Darüber hinaus bietet Spring Boot umfangreiche Sicherheitsfunktionen, durch Spring Security, die eine einfache Umsetzung von Authentifizierung, Autorisierung und Rollenmanagement ermöglichen. 
+
+PostgreSQL wurde als Datenbank gewählt, da bereits in früheren Projekten praktische Erfahrungen mit diesem System gesammelt wurden. Es dient als zentrale Komponente für das User-Management sowie das Handling von Tokens und ermöglicht eine zuverlässige, relationale Speicherung und Verwaltung der entsprechenden Daten.
+
+Als Reverse Proxy und Loadbalancer wurde NGINX eingesetzt, da es sich durch einfache Konfiguration, hohe Performance und breite Verbreitung in Enterprise-Umgebungen auszeichnet. Es ermöglicht die Verteilung von Anfragen auf mehrere Backend-Instanzen, erhöht die Verfügbarkeit und unterstützt somit direkt die beiden nicht-funktionalen Anforderungen Ausfallsicherheit und Skalierbarkeit des Systems.
 
 == Systemkomponenten
 === Cowrie
 === Filebeat, Logstash, Elastic Search
+=== Vue JS
 === Springboot
 === PostgreSQL
-=== Vue JS
 === NGINX
 
 #pagebreak()
@@ -89,6 +99,7 @@ Vor diesem Hintergrund wurde im Rahmen der Praxisarbeit der Vorlesung "Verteilte
 - Race Condition beim gleichzeitigen Schreiben in die Datenbank.
 - macvlan veth interface
 - macvlan shim net
+
 == Mögliche Alternativen
 
 
