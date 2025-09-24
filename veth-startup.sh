@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ###############################################
-#     Startup Script for Wifi-only devices    #
+#       Startup Script Virtual Ethernet       #
 ###############################################
 
 set -e

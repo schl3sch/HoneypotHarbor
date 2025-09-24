@@ -1,18 +1,24 @@
 #!/bin/bash
 
-echo "Stopping Gateway:"
+###############################################
+#              Shutdown Script                #
+###############################################
+
+echo "Stopping Gateway."
 docker compose -f gateway/docker-compose.yml down
 
-echo "Stopping Attacker Network:"
-docker compose -f attacker-net/docker-compose.yml --env-file attacker-net/attacker.env down
+echo "Stopping Attacker Network."
+docker compose -f attacker-net/docker-compose.yml down
 
-echo "Stopping Internal Network:"
-docker compose -f internal-net/docker-compose.yml down
+echo "Stopping Internal Network."
+docker compose -f internal-net/docker-compose.yml  --env-file internal-net/internal.env down
 
-echo "Removing Networks:"
+echo "Removing Networks."
 docker network rm honeypotharbor-internal-network honeypotharbor-attacker-network
 
-echo "Removing host macvlan interfaces and routes..."
+
+echo "Removing host macvlan interfaces and routes."
+
 # Internal network
 sudo ip route del 192.168.1.0/25 dev internal-net
 sudo ip link set internal-net down
