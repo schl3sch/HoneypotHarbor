@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 echo "Create Networks:"
 docker network create -d macvlan \
   --subnet=192.168.1.0/25 \

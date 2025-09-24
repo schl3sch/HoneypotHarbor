@@ -94,6 +94,8 @@ Als Reverse Proxy und Loadbalancer wurde *NGINX* eingesetzt, da es sich durch ei
 === Security
 #image("assets/spring-security.png")
 
+=== Vue.js Composition API
+
 == Schwierigkeiten & Lösungen
 
 === Vue.js SPA - NGINX
@@ -109,7 +111,7 @@ server {
     }
 }
 ```
-Die try_files Direktive sorgt dafür, dass alle nicht vorhandenen Pfade auf index.html umgeleitet werden, sodass das Vue-Routing korrekt funktioniert. Dadurch konnten die SPA-Routen zuverlässig aufgelöst und die Frontend-Anwendung wie vorgesehen bereitgestellt werden.
+"try_files" sorgt dafür, dass alle nicht vorhandenen Pfade auf index.html umgeleitet werden, sodass das Vue-Routing korrekt funktioniert. Dadurch konnten die SPA-Routen zuverlässig aufgelöst und die Frontend-Anwendung wie vorgesehen bereitgestellt werden. @shapeOptimizingNginx
 
 === Datenbank-Initialisierung Race Condition
 
@@ -117,8 +119,43 @@ Beim Betrieb von drei Spring-Boot-Instanzen gleichzeitig kam es zu einer Race Co
 
 Die Lösung bestand darin, ein SQL-Initialisierungsfile beim Start des PostgreSQL-Docker-Containers zu verwenden, das das benötigte Schema einmalig anlegt. Auf diese Weise wird die Datenbank sauber initialisiert, ohne das dies von Spring Boots Seite aus geschieht.
 
-- macvlan veth interface
-- macvlan shim net
+=== Kommunikation mit Macvlan-Netzwerken
+
+Ein weiteres Problem trat beim Einsatz von Docker-Macvlan Netzwerken auf. Standardmäßig können Container in einem Macvlan Netz nicht direkt mit dem Host kommunizieren. Dies liegt daran, dass Macvlan eine separate virtuelle Netzwerkschnittstelle erstellt, die auf Ebene von Layer 2 arbeitet und dem Container eine eigene MAC-Adresse zuweist. Der Host selbst ist dabei jedoch nicht Teil der gleichen Broadcast Domaine, da er die Pakete lediglich weiterleitet, aber keine eigene Präsenz im Macvlan Segment besitzt. Für die Container wirkt der Host daher wie ein externer Knoten außerhalb des Netzes, was die direkte Kommunikation verhindert.
+
+Diese Einschränkung erschwerte die Integration der Honeypot-Umgebung erheblich. So war es beispielsweise nicht möglich, von außen (vom Host) auf die Honeypots zuzugreifen oder das Frontend im Browser zu öffnen. Praktisch bedeutete dies, dass die Container zwar untereinander kommunizieren konnten, die Interaktion mit dem Host jedoch blockiert war.
+
+Die Lösung bestand darin, ein sogenanntes Shim-Netzwerk zu konfigurieren, um die Kommunikation zwischen Host und Macvlan-Containern zu ermöglichen. Dabei wurden die Macvlan-Netzwerke so erweitert, dass der Host explizit eine eigene Adresse innerhalb des jeweiligen Subnetzes erhielt. In Docker wurde dies über die Option --aux-address umgesetzt:
+
+```sh
+# Shim net für internal-net (Frontend/Backend) 
+docker network create -d macvlan \
+  --subnet=192.168.1.0/25 \
+  --gateway=192.168.1.1 \
+  --aux-address 'host=192.168.1.126' \
+  -o parent=veth0 \
+  honeypotharbor-internal-network 
+```
+Die --aux-address reserviert dabei eine feste IP-Adresse für den Host im Macvlan-Subnetz, sodass er wie ein regulärer Netzwerkteilnehmer behandelt wird. Zusätzlich wurde auf dem Host eine direkte Macvlan-Schnittstelle eingerichtet, um sicherzustellen, dass Pakete korrekt geroutet werden:
+```sh
+echo "Create internal Macvlan shim for Host-access."
+sudo ip link add internal-net link veth0 type macvlan mode bridge
+sudo ip addr add 192.168.1.126/25 dev internal-net 
+sudo ip link set internal-net up
+sudo ip route add 192.168.1.0/25 dev internal-net
+```
+
+- ip link add erstellt das virtuelle Interface auf Basis des Host-Interfaces.
+- ip addr add weist die reservierte IP-Adresse zu.
+- ip link set ... up aktiviert die Schnittstelle.
+- ip route add sorgt dafür, dass alle Pakete an das Macvlan-Subnetz korrekt über das neue Interface laufen.
+
+Durch diese Maßnahmen konnte der Host sowohl Anfragen an die Honeypots als auch an das Monitoring-Frontend weiterleiten. Die zuvor bestehende Kommunikationsbarriere zwischen Host und Containern wurde aufgehoben, sodass die Infrastruktur konsistent nutzbar war. @oddbitUsingDocker
+
+
+
+=== Problematik fehlender Netzwerkkarte
+
 
 == Mögliche Alternativen
 

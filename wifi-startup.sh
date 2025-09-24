@@ -32,14 +32,12 @@ echo "Create internal Macvlan shim for Host-access."
 sudo ip link add internal-net link veth0 type macvlan mode bridge
 sudo ip addr add 192.168.1.126/25 dev internal-net 
 sudo ip link set internal-net up
-sudo ip route del 192.168.1.0/25 dev internal-net 2>/dev/null
 sudo ip route add 192.168.1.0/25 dev internal-net
 
 echo "Create attacker Macvlan shim for Host-access."
 sudo ip link add attacker-net link veth0 type macvlan mode bridge
 sudo ip addr add 192.168.1.254/25 dev attacker-net
 sudo ip link set attacker-net up
-sudo ip route del 192.168.1.128/25 dev attacker-net 2>/dev/null
 sudo ip route add 192.168.1.128/25 dev attacker-net
 
 echo "Prepare Cowrie directories and permissions."
