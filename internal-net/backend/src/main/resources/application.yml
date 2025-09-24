@@ -16,3 +16,7 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
+management:
+  health:
+    elasticsearch:
+      enabled: false

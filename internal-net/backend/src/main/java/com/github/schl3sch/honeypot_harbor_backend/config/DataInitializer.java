@@ -14,8 +14,8 @@ import com.github.schl3sch.honeypot_harbor_backend.user.UserRepository;
 @RequiredArgsConstructor
 public class DataInitializer {
 
-    @Value("${ADMIN_PASSWORD}")
-    private String adminPassword;
+
+    private String adminPassword = "admin";
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -27,7 +27,7 @@ public class DataInitializer {
                     .lastname("Admin")
                     .email("admin")
                     .password(passwordEncoder.encode(adminPassword))
-                    .role(Role.ADMIN)
+                    .role(Role.ROLE_ADMIN)
                     .build();
 
             try {

@@ -2,8 +2,10 @@ package com.github.schl3sch.honeypot_harbor_backend.auth.service;
 
 import com.github.schl3sch.honeypot_harbor_backend.auth.dto.AuthenticationRequest;
 import com.github.schl3sch.honeypot_harbor_backend.auth.dto.AuthenticationResponse;
+import com.github.schl3sch.honeypot_harbor_backend.auth.dto.ChangeInitialAdminPasswordRequest;
 import com.github.schl3sch.honeypot_harbor_backend.auth.dto.RegisterRequest;
 import com.github.schl3sch.honeypot_harbor_backend.config.security.JwtService;
+import com.github.schl3sch.honeypot_harbor_backend.exception.Exceptions;
 import com.github.schl3sch.honeypot_harbor_backend.token.TokenRepository;
 import com.github.schl3sch.honeypot_harbor_backend.token.model.TokenType;
 import com.github.schl3sch.honeypot_harbor_backend.token.model.Token;
@@ -28,7 +30,7 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(RegisterRequest request) {
         if(repository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Email already registered.");
+            throw new IllegalArgumentException("Something wrent wrong..");
         }
         if(!request.getPassword().equals(request.getPasswordConfirmation())){
             throw new IllegalArgumentException("Passwords do not match.");
@@ -38,7 +40,7 @@ public class AuthenticationService {
                 .lastname(request.getLastname())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
+                .role(Role.ROLE_USER)
                 .build();
 
         var savedUser = repository.save(user);
@@ -52,15 +54,20 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
 
+        var user = repository.findByEmail(request.getEmail())
+                .orElseThrow();
+
+        if ("admin".equals(request.getEmail()) && "admin".equals(request.getPassword())
+                && passwordEncoder.matches("admin", user.getPassword())) {
+            throw new Exceptions.MustChangePasswordException();
+        }
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()
                 )
         );
-
-        var user = repository.findByEmail(request.getEmail())
-                .orElseThrow();
 
         var jwtToken = jwtService.generateToken(user);
 
@@ -72,7 +79,44 @@ public class AuthenticationService {
                 .build();
     }
 
-    private void saveUserToken(User user, String jwtToken) {
+    public void checkIfInitialAdmin(String email) {
+        var user = repository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+
+        if (!"admin".equals(user.getEmail()) || !passwordEncoder.matches("admin", user.getPassword())) {
+            throw new IllegalStateException("Access denied");
+        }
+    }
+
+    public AuthenticationResponse changeInitialAdminPassword(ChangeInitialAdminPasswordRequest request) {
+
+        var user = repository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+
+        if (!"admin".equals(request.getEmail()) || !passwordEncoder.matches("admin", user.getPassword())) {
+            throw new IllegalStateException("Admin password has already been changed");
+        }
+
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalStateException("Wrong current password");
+        }
+
+        if (!request.getNewPassword().equals(request.getConfirmationPassword())) {
+            throw new IllegalStateException("New password and confirmation do not match");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        repository.save(user);
+
+        var jwtToken = jwtService.generateToken(user);
+        saveUserToken(user, jwtToken);
+
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .build();
+    }
+
+    public void saveUserToken(User user, String jwtToken) {
         var token = Token.builder()
                 .user(user)
                 .token(jwtToken)
@@ -83,7 +127,7 @@ public class AuthenticationService {
         tokenRepository.save(token);
     }
 
-    private void revokeAllUserTokens(User user) {
+    public void revokeAllUserTokens(User user) {
         var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
         if (validUserTokens.isEmpty()) {
             return;

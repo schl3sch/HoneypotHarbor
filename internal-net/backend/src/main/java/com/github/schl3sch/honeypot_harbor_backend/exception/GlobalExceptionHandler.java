@@ -30,6 +30,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(Exceptions.MustChangePasswordException.class)
+    public ResponseEntity<ApiError> handleMustChangePasswordException(Exceptions.MustChangePasswordException ex) {
+        ApiError error = new ApiError(
+                HttpStatus.FORBIDDEN,
+                ex.getMessage(),
+                "Password change required"
+        );
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGenericException(Exception ex) {
         ApiError error = new ApiError(
