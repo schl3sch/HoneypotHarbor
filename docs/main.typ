@@ -110,7 +110,7 @@ Als dritte Sicherheitsmaßnahme wurde Role-Based Access Control (RBAC) umgesetzt
 
 === Loadbalancing und Failover
 
-Die Verteilung der Anfragen auf mehrere Frontend- und Backend-Instanzen wurde durch NGINX als Reverse Proxy und Loadbalancer verwirklicht. Im HTTP-Bereich werden die Requests für das Frontend mit Round Robin auf drei Server verteilt, während die Backend-Anfragen mit der "Least Connections Strategie" an drei Spring-Boot-Instanzen weitergeleitet werden. Untersuchungen zeigen, dass Round Robin bei Frontend-Anfragen mit meist ähnlicher Last effizient ist, während Least Connections für Backend-Server mit unterschiedlich großen und variierenden Requests die Antwortzeiten optimiert und die Ressourcennutzung verbessert. @article
+Die Verteilung der Anfragen auf mehrere Frontend- und Backend-Instanzen wurde durch NGINX als Reverse Proxy und Loadbalancer verwirklicht. Im HTTP-Bereich werden die Requests für das Frontend mit Round Robin auf drei Server verteilt, während die Backend-Anfragen mit der "Least Connections Strategie" an drei Spring-Boot-Instanzen weitergeleitet werden. Untersuchungen zeigen, dass Round Robin bei Anfragen mit meist ähnlicher Last effizient ist was bei Frontend Anfragen der Fall ist, während Least Connections für Backend-Server mit unterschiedlich großen und variierenden Requests die Antwortzeiten optimiert und die Ressourcennutzung verbessert. @article @geeksforgeeksNetworkLoad
 
 Für die Backend Upstream Gruppe sorgt NGINX-Failover dafür, dass Anfragen automatisch auf andere Instanzen weitergeleitet werden, wenn eine Backend-Instanz fehlschlägt oder nicht antwortet:
 ```conf
@@ -124,7 +124,7 @@ location /api/ {
 ```
 Damit wird die Verfügbarkeit der API auch bei Ausfällen einzelner Backend-Server gewährleistet.
 
-Die Log-Weiterleitung von Filebeat zu Logstash wurde der Stream-Modus von NGINX verwendet, wodurch eingehende TCP-Verbindungen ebenfalls auf mehrere Logstash Instanzen verteilt werden.
+Die Log Weiterleitung von Filebeat zu Logstash wurde der Stream-Modus von NGINX verwendet, wodurch eingehende TCP Verbindungen ebenfalls auf mehrere Logstash Instanzen verteilt werden.
 
 === Vue.js Composition API
 
