@@ -102,51 +102,31 @@ public class AnalyticsService {
         .map(bucket -> new TopPasswordsResponse(bucket.key().stringValue(), bucket.docCount())).toList();
     }
 
-    public List<JsonNode> getAttacksToday() throws IOException {
-        // Set startOfDay as midnight today
-        Instant startOfDay = LocalDate.now()
-            .atStartOfDay(ZoneId.systemDefault())
-            .toInstant();
-
-        // Query all logs where "timestamp" is today and track total hits
+    public long getAttacksAllCount() throws IOException {
         SearchResponse<Void> response = client.search(s -> s
-            .index("cowrie-*").size(0).trackTotalHits(t -> t.enabled(true))
-            .query(q -> q
-                .range(r -> r
-                    .date(d -> d.field("timestamp")
-                    .gte(startOfDay.toString()).lte("now")))),
-            Void.class
+                        .index("cowrie-*").size(0)
+                        .trackTotalHits(t -> t.enabled(true))
+                        .query(q -> q.matchAll(m -> m)),
+                Void.class
         );
-
-        // Set "count" to the tracked total hits from "response"
-        long count = response.hits().total().value();
-        
-        // Build JSON from "count" and return
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode node = mapper.createObjectNode();
-        node.put("count", count);
-
-        return List.of((JsonNode) node);
+        return response.hits().total().value();
     }
 
-    public List<JsonNode> getAttacksAll() throws IOException {
-        // Query all logs and track total hits
+    public long getAttacksTodayCount() throws IOException {
+        Instant startOfDay = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant();
         SearchResponse<Void> response = client.search(s -> s
-            .index("cowrie-*").size(0).trackTotalHits(t -> t.enabled(true))
-            .query(q -> q.matchAll(m -> m)),
-            Void.class
+                        .index("cowrie-*").size(0)
+                        .trackTotalHits(t -> t.enabled(true))
+                        .query(q -> q.range(r -> r.date(
+                                d -> d.field("timestamp")
+                                        .gte(startOfDay.toString())
+                                        .lte("now")))
+                        ),
+                Void.class
         );
-
-        // Set "count" to the tracked total hits from "response"
-        long count = response.hits().total().value();
-        
-        // Build a Json from "count" and return
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode node = mapper.createObjectNode();
-        node.put("count", count);
-
-        return List.of((JsonNode) node);
+        return response.hits().total().value();
     }
+
 
     public List<JsonNode> getAttacksOverTime() throws IOException {
         // Get all timestamps from all logs

@@ -17,7 +17,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
   elasticsearch:
-    uris: http://${ELASTIC_IP}:9200
+    uris: http://192.168.1.102:9200
     username: ${ELASTIC_USER}
     password: ${ELASTIC_PASSWORD}
     

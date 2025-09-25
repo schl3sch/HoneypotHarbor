@@ -46,9 +46,11 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
 import Layout from '../components/Layout.vue'
+import { auth } from '../store/auth.js'
 
 export default {
     name: 'HoneypotsPage',
@@ -56,43 +58,83 @@ export default {
     setup() {
         const router = useRouter()
         
-        const honeypots = ref([
-        { id: 1, name: 'Honeypot Alpha' },
-        { id: 2, name: 'Honeypot Beta' },
-        { id: 3, name: 'Honeypot Gamma' }
-        ])
+        const honeypots = ref([])
+        const selectedHoneypot = ref(null)
+        const logs = ref({})
+        let pollingInterval = null
         
-        const selectedHoneypot = ref(1)
-        
-        const logs = ref({
-            1: [
-            { timestamp: '2025-09-20 10:00:00', srcIP: '192.168.1.10', message: 'Login failed' },
-            { timestamp: '2025-09-20 10:05:00', srcIP: '192.168.1.11', message: 'SSH scan detected' }
-            ],
-            2: [
-            { timestamp: '2025-09-20 11:00:00', srcIP: '192.168.1.20', message: 'Port scan' },
-            { timestamp: '2025-09-20 11:15:00', srcIP: '192.168.1.21', message: 'Malware attempt' }
-            ],
-            3: [
-            { timestamp: '2025-09-20 12:00:00', srcIP: '192.168.1.30', message: 'Brute force login' },
-            { timestamp: '2025-09-20 12:20:00', srcIP: '192.168.1.31', message: 'Suspicious request' }
-            ]
-        })
-        
-        const currentHoneypot = computed(() =>
-        honeypots.value.find(hp => hp.id === selectedHoneypot.value) || { name: '' }
-        )
-        
-        const currentLogs = computed(() => logs.value[selectedHoneypot.value] || [])
-        
-        const onHoneypotChange = () => {
-            console.log('Honeypot changed to ID:', selectedHoneypot.value)
+        // Fetch Helper
+        async function safeFetch(url, fallback = null) {
+            try {
+                const res = await axios.get(url, {
+                    headers: { Authorization: `Bearer ${auth.token}` }
+                })
+                return res.data
+            } catch (err) {
+                console.error(`Error fetching ${url}:`, err)
+                return fallback
+            }
         }
         
-        onMounted(() => {
+        // get all honeypots 
+        async function fetchHoneypots() {
+            const res = await safeFetch('/api/v1/analytics/statistics/location', [])
+            honeypots.value = res.map((hp, idx) => ({
+                id: hp.honeypotId || idx + 1,
+                name: `Honeypot ${hp.honeypotId || idx + 1}`
+            }))
+            
+            if (honeypots.value.length > 0) {
+                selectedHoneypot.value = honeypots.value[0].id
+                await fetchLogsForHoneypot(selectedHoneypot.value)
+            }
+        }
+        
+        // get logs for current honeypot
+        async function fetchLogsForHoneypot(id) {
+            if (!id) return
+            const res = await safeFetch(`/api/v1/analytics/honeypots/${id}/logs`, [])
+            logs.value = {
+                [id]: res.map(log => ({
+                    timestamp: log.timestamp || 'n/a',
+                    srcIP: log.srcIP || 'n/a',
+                    message: log.message || JSON.stringify(log)
+                }))
+            }
+        }
+        
+        // if Honeypot is changed in frontend
+        const onHoneypotChange = async () => {
+            console.log('Honeypot changed to ID:', selectedHoneypot.value)
+            await fetchLogsForHoneypot(selectedHoneypot.value)
+        }
+        
+
+        const currentHoneypot = computed(() =>
+            honeypots.value.find(hp => hp.id === selectedHoneypot.value) || { name: '' }
+        )
+        
+        const currentLogs = computed(() =>
+            logs.value[selectedHoneypot.value] || []
+        )
+        
+        onMounted(async () => {
             if (!localStorage.getItem('token')) {
                 router.push('/')
+                return
             }
+            await fetchHoneypots()
+            
+            // Polling 
+            pollingInterval = setInterval(async () => {
+                if (selectedHoneypot.value) {
+                    await fetchLogsForHoneypot(selectedHoneypot.value)
+                }
+            }, 3000)
+        })
+        
+        onBeforeUnmount(() => {
+            if (pollingInterval) clearInterval(pollingInterval)
         })
         
         return {

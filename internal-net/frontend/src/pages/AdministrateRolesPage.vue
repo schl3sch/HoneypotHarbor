@@ -27,24 +27,24 @@
                             data-bs-toggle="dropdown"
                             >
                             ☰
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li v-for="roleOption in roles" :key="roleOption">
-                                    <a
-                                    class="dropdown-item"
-                                    href="#"
-                                    @click.prevent="confirmRoleChange(user, roleOption)"
-                                    >
-                                    {{ roleMapping[roleOption] }}
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </Layout>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li v-for="roleOption in roles" :key="roleOption">
+                                <a
+                                class="dropdown-item"
+                                href="#"
+                                @click.prevent="confirmRoleChange(user, roleOption)"
+                                >
+                                {{ roleMapping[roleOption] }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</Layout>
 </template>
 
 <script>
@@ -68,24 +68,30 @@ export default {
         }
         let intervalId = null
         
-        const loadUsers = async () => {
+        // Fetch helper funktion
+        async function safeFetch(url, fallback = null) {
             try {
-                const res = await axios.get('/api/v1/admin/users', {
+                const res = await axios.get(url, {
                     headers: { Authorization: `Bearer ${auth.token}` }
                 })
-                users.value = res.data
+                return res.data
             } catch (err) {
-                console.error('Failed to load users', err)
+                console.error(`Error fetching ${url}:`, err)
+                return fallback
             }
         }
         
-        // if admin, get all users if not than route back to dashboard
+        // get all user information
+        const loadUsers = async () => {
+            const res = await safeFetch('/api/v1/admin/users', [])
+            users.value = res
+        }
+        
+        // check if current user in afmin
         const checkIfAdmin = async () => {
             try {
-                const res = await axios.get('/api/v1/users/role', {
-                    headers: { Authorization: `Bearer ${auth.token}` }
-                })
-                if (res.data.role !== 'ROLE_ADMIN') {
+                const res = await safeFetch('/api/v1/users/role', null)
+                if (!res || res.role !== 'ROLE_ADMIN') {
                     router.push('/dashboard')
                 } else {
                     await loadUsers()
@@ -102,33 +108,41 @@ export default {
                 return
             }
             await checkIfAdmin()
-            // update users every 10th second
-            intervalId = setInterval(loadUsers, 10000)
+            
+            // Polling
+            intervalId = setInterval(loadUsers, 5000)
         })
         
         onBeforeUnmount(() => {
-            clearInterval(intervalId)
+            if (intervalId) clearInterval(intervalId)
         })
-
+        
         const confirmRoleChange = (user, newRole) => {
-            if (confirm(`Change role of ${user.firstname} ${user.lastname} to ${newRole}?`)) {
+            if (confirm(`Change role of ${user.firstname} ${user.lastname} to ${roleMapping[newRole]}?`)) {
                 changeUserRole(user, newRole)
             }
         }
         
-        // change role to selected role
+        // Change role for user
         const changeUserRole = async (user, newRole) => {
             try {
-                await axios.put(`/api/v1/admin/users/${user.id}/role`, { role: newRole }, {
-                    headers: { Authorization: `Bearer ${auth.token}` }
-                })
+                await axios.put(
+                `/api/v1/admin/users/${user.id}/role`,
+                { role: newRole },
+                { headers: { Authorization: `Bearer ${auth.token}` } }
+                )
                 user.role = newRole
             } catch (err) {
                 console.error('Failed to change role', err)
             }
         }
         
-        return { users, roles, roleMapping, confirmRoleChange }
+        return { 
+            users, 
+            roles, 
+            roleMapping, 
+            confirmRoleChange
+        }
     }
 }
 </script>

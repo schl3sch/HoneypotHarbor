@@ -16,9 +16,9 @@
                                             <tr><th>#</th><th>Username</th></tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="(user,i) in topUsernames" :key="'user'+i">
+                                            <tr v-for="(user,i) in sortedUsernames" :key="'user'+i">
                                                 <td>{{ i+1 }}</td>
-                                                <td>{{ user }}</td>
+                                                <td>{{ user.username }}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -35,9 +35,9 @@
                                             <tr><th>#</th><th>Password</th></tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="(pw,i) in topPasswords" :key="'pw'+i">
+                                            <tr v-for="(pw,i) in sortedPasswords" :key="'pw'+i">
                                                 <td>{{ i+1 }}</td>
-                                                <td>{{ pw }}</td>
+                                                <td>{{ pw.password }}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -86,7 +86,7 @@
 
 <script>
 import Layout from '../components/Layout.vue'
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 import { auth } from '../store/auth.js'
@@ -138,6 +138,15 @@ export default {
                 return fallback
             }
         }
+
+        const sortedUsernames = computed(() =>
+            [...topUsernames.value].sort((a, b) => b.count - a.count)
+        )
+
+        const sortedPasswords = computed(() =>
+            [...topPasswords.value].sort((a, b) => b.count - a.count)
+        )
+
                     
         async function fetchTopUsernames() {
             topUsernames.value = await safeFetch(
@@ -164,11 +173,38 @@ export default {
                 { count: 0 })
             todayAttacks.value = res.count
         }
+
+        // group logs for better visualization in chart
+        function groupLogsByFiveMinutes(logs) {
+            const intervals = {}
+
+            logs.forEach(log => {
+                const date = new Date(log.timestamp)
+
+                // Calculate the 5-minute bucket
+                const minutes = Math.floor(date.getMinutes() / 5) * 5
+                const intervalKey = `${date.getHours().toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}`
+                if (!intervals[intervalKey]) intervals[intervalKey] = 0
+                intervals[intervalKey] += 1
+            })
+
+            // Convert intervals to an array sorted by time
+            const sortedIntervals = Object.keys(intervals)
+                .sort((a, b) => {
+                    const [ha, ma] = a.split(':').map(Number)
+                    const [hb, mb] = b.split(':').map(Number)
+                    return ha !== hb ? ha - hb : ma - mb
+                })
+                .map(key => ({ time: key, count: intervals[key] }))
+
+            return sortedIntervals
+}
         
         async function fetchAttacksByTime() {
-            attacksByTime.value = await safeFetch(
-                '/api/v1/analytics/statistics/attacks/time', 
-                [])
+            const rawLogs = await safeFetch('/api/v1/analytics/statistics/attacks/time', [])
+            // Group logs into 5-minute intervals
+            attacksByTime.value = groupLogsByFiveMinutes(rawLogs)
+
             if (chartInstance) {
                 chartInstance.data.labels = attacksByTime.value.map(a => a.time)
                 chartInstance.data.datasets[0].data = attacksByTime.value.map(a => a.count)
@@ -198,64 +234,6 @@ export default {
             }
             return { lat: parseFloat(found.lat), lng: parseFloat(found.lng) };
         }
-        
-
-        const testCities = [
-                { city: 'Berlin', count: 5 },
-                { city: 'Paris', count: 3 },
-                { city: 'London', count: 8 },
-                { city: 'New York', count: 12 },
-                { city: 'Tokyo', count: 7 },
-                { city: 'Moscow', count: 10 },
-                { city: 'Sydney', count: 2 },
-                { city: 'Los Angeles', count: 4 },
-                { city: 'San Francisco', count: 5 },
-                { city: 'Rome', count: 3 },
-                { city: 'Mexico City', count: 6 },
-                { city: 'Beijing', count: 7 },
-                { city: 'Singapore', count: 5 },
-                { city: 'São Paulo', count: 4 },
-                { city: 'Toronto', count: 3 },
-                { city: 'Stockholm', count: 2 },
-                { city: 'Athens', count: 3 },
-                { city: 'Frankfurt', count: 5 },
-                { city: 'Milan', count: 4 },
-                { city: 'Shanghai', count: 6 },
-                { city: 'Delhi', count: 7 },
-                { city: 'Florence', count: 2 },
-                { city: 'Amsterdam', count: 3 },
-                { city: 'Edinburgh', count: 2 },
-                { city: 'Washington D.C.', count: 5 },
-                { city: 'Istanbul', count: 6 },
-                { city: 'Bangkok', count: 4 },
-                { city: 'Johannesburg', count: 3 },
-                { city: 'Seoul', count: 7 },
-                { city: 'Cairo', count: 4 },
-                { city: 'Helsinki', count: 2 },
-                { city: 'Lisbon', count: 3 },
-                { city: 'Dubai', count: 5 },
-                { city: 'Buenos Aires', count: 4 },
-                { city: 'Kuala Lumpur', count: 3 },
-                { city: 'Hong Kong', count: 6 },
-                { city: 'Barcelona', count: 4 },
-                { city: 'Oslo', count: 2 },
-                { city: 'Vienna', count: 3 },
-                { city: 'Lima', count: 3 },
-                { city: 'Jakarta', count: 5 },
-                { city: 'Manila', count: 4 }
-            ]
-
-        function loadTestCoordinates() {
-            const results = [];
-            for (const item of testCities) {
-                const coords = cityToCoordinates(item.city);
-                if (coords) {
-                    results.push({ ...coords, count: item.count });
-                }
-            }
-            attackCoordinates.value = results;
-        }
-    
 
         
         onMounted(async () => {
@@ -308,51 +286,15 @@ export default {
                 fetchAttacksByTime()
             ])
 
-            topUsernames.value = [
-                'Alice', 'Bob', 'Charlie', 'David', 'Eva',
-                'Frank', 'Grace', 'Hannah', 'Ivan', 'Julia'
-            ]
-
-            topPasswords.value = [
-            '123456', 'password', 'qwerty', 'abc123', 'letmein',
-            'welcome', 'monkey', 'dragon', 'iloveyou', 'admin'
-            ]
-
-            totalAttacks.value = 1200
-            todayAttacks.value = 45
-
-            attacksByTime.value = [
-                { time: '00:00', count: 5 },
-                { time: '03:10', count: 8 },
-                { time: '04:00', count: 3 },
-                { time: '06:20', count: 7 },
-                { time: '08:00', count: 10 },
-                { time: '11:45', count: 12 },
-                { time: '12:00', count: 15 },
-                { time: '14:20', count: 9 },
-                { time: '16:00', count: 11 },
-                { time: '18:00', count: 8 },
-                { time: '21:30', count: 6 },
-                { time: '22:00', count: 4 }
-            ]
-
-            if (chartInstance) {
-                chartInstance.data.labels = attacksByTime.value.map(a => a.time)
-                chartInstance.data.datasets[0].data = attacksByTime.value.map(a => a.count)
-                chartInstance.update()
-            }
-
-
             // Realtime Update (Polling)
             setInterval(() => {
-                //fetchTopUsernames()
-                //fetchTopPasswords()
-                loadTestCoordinates()
-                // fetchAttackCoordinates()
-                //fetchTotalAttacks()
-                //fetchTodayAttacks()
-                //fetchAttacksByTime()
-            }, 5000)
+                fetchTopUsernames()
+                fetchTopPasswords()
+                fetchAttackCoordinates()
+                fetchTotalAttacks()
+                fetchTodayAttacks()
+                fetchAttacksByTime()
+            }, 3000)
         })
         
         // Watch attackCoordinates update cluster
@@ -366,7 +308,14 @@ export default {
             })
         })
         
-        return { topUsernames, topPasswords, attackCoordinates, totalAttacks, todayAttacks, attacksByTime }
+        return { 
+            sortedUsernames,
+            sortedPasswords,
+            attackCoordinates, 
+            totalAttacks, 
+            todayAttacks, 
+            attacksByTime 
+        }
     }
 }
 </script>

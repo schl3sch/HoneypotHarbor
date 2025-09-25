@@ -8,7 +8,7 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 @Configuration
 public class ElasticsearchConfig {
 
-    @Value("http://${ELASTIC_IP}:9200")
+    @Value("http://192.168.1.102:9200")
     private String serverUrl;
 
     @Value("${ELASTIC_USER}")

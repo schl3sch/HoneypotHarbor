@@ -9,10 +9,12 @@ import com.github.schl3sch.honeypot_harbor_backend.analytics.service.AnalyticsSe
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/analytics")
@@ -20,11 +22,13 @@ import java.util.List;
 public class AnalyticsController {
     private final AnalyticsService service;
 
+    //@PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/honeypots")
     public ResponseEntity<List<HoneypotResponse>> getHoneypots() throws IOException {
         return ResponseEntity.ok(service.getAllHoneypots());
     }
-
+    
+    //@PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/honeypots/{id}/logs")
     public ResponseEntity<List<JsonNode>> getLogsForHoneypot(@PathVariable String id) throws IOException {
         return ResponseEntity.ok(service.getLogsForHoneypot(id));
@@ -46,13 +50,17 @@ public class AnalyticsController {
     }
 
     @GetMapping("/statistics/attacks/today")
-    public ResponseEntity<List<JsonNode>> getAttacksToday() throws IOException {
-        return ResponseEntity.ok(service.getAttacksToday());
+    public ResponseEntity<Map<String, Long>> getAttacksToday() throws IOException {
+        long count = service.getAttacksTodayCount();
+        Map<String, Long> response = Map.of("count", count);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/statistics/attacks/all")
-    public ResponseEntity<List<JsonNode>> getAttacksAll() throws IOException {
-        return ResponseEntity.ok(service.getAttacksAll());
+    public ResponseEntity<Map<String, Long>> getAttacksAll() throws IOException {
+        long count = service.getAttacksAllCount();
+        Map<String, Long> response = Map.of("count", count);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/statistics/attacks/time")
