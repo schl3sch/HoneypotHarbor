@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ###############################################
-#     Startup Script for Wifi-only devices    #
+#       Startup Script Virtual Ethernet       #
 ###############################################
 
 set -e
@@ -44,8 +44,8 @@ echo "Prepare Cowrie directories and permissions."
 for i in 1 2 3; do
     sudo mkdir -p attacker-net/logs/cowrie$i
     sudo touch attacker-net/logs/cowrie$i/cowrie.json
-    sudo chown -R $USER:999 attacker-net/logs/ attacker-net/cowrie-etc/
-    sudo chmod -R 775 attacker-net/logs/ attacker-net/cowrie-etc/
+    sudo chown -R $USER:999 attacker-net/logs/ attacker-net/etc/
+    sudo chmod -R 775 attacker-net/logs/ attacker-net/etc/
 done
 
 echo "Startup Internal Network."

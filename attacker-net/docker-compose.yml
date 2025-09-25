@@ -11,7 +11,8 @@ services:
       honeypotharbor-attacker-network:
         ipv4_address: 192.168.1.131
     volumes:
-      - ./cowrie-etc:/cowrie/cowrie-git/etc:ro
+      - ./etc/userdb.txt:/cowrie/cowrie-git/etc/userdb.txt:ro
+      - ./etc/cowrie.cfg:/cowrie/cowrie-git/etc/cowrie.cfg:ro
       - ./logs/cowrie1:/var/log/cowrie
 
   cowrie2:
@@ -22,7 +23,8 @@ services:
       honeypotharbor-attacker-network:
         ipv4_address: 192.168.1.132
     volumes:
-      - ./cowrie-etc:/cowrie/cowrie-git/etc:ro
+      - ./etc/userdb.txt:/cowrie/cowrie-git/etc/userdb.txt:ro
+      - ./etc/cowrie.cfg:/cowrie/cowrie-git/etc/cowrie.cfg:ro
       - ./logs/cowrie2:/var/log/cowrie
 
   cowrie3:
@@ -33,5 +35,6 @@ services:
       honeypotharbor-attacker-network:
         ipv4_address: 192.168.1.133
     volumes:
-      - ./cowrie-etc:/cowrie/cowrie-git/etc:ro
+      - ./etc/userdb.txt:/cowrie/cowrie-git/etc/userdb.txt:ro
+      - ./etc/cowrie.cfg:/cowrie/cowrie-git/etc/cowrie.cfg:ro
       - ./logs/cowrie3:/var/log/cowrie

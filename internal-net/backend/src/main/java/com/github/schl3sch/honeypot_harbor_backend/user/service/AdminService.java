@@ -17,6 +17,7 @@ public class AdminService {
 
     private final UserRepository repository;
 
+    // get all users for administration panel
     public List<GetAllUsersResponse> getAllUsers(String currentUserEmail) {
         return repository.findAll()
                 .stream()
@@ -31,6 +32,7 @@ public class AdminService {
                 .collect(Collectors.toList());
     }
 
+    // change the role of the selected user
     public void updateUserRole(Integer id, Role newRole) {
         User user = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id " + id));

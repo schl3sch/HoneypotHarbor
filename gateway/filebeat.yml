@@ -41,6 +41,17 @@ filebeat.inputs:
     fields_under_root: true
     ignore_older: 0s
 
+  - type: filestream
+    id: cowrie-test-data
+    enabled: true
+    paths:
+      - /logs/testlogs/testlogs.json
+    parsers:
+       - ndjson:
+          keys_under_root: true
+          add_error_key: true
+    ignore_older: 0s
+
 output.logstash:
   hosts: ["192.168.1.112:5044"]
 
