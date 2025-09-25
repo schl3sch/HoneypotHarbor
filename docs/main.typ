@@ -69,7 +69,7 @@ Vor diesem Hintergrund wurde im Rahmen der Praxisarbeit der Vorlesung "Verteilte
 ) <data-flow>
 
 == Architektur Entscheidungen
-Als Honeypots wurde *Cowrie* (#link("github.com/cowrie/cowrie")) gewählt, da es speziell auf SSH-Angriffe ausgelegt ist und damit besonders gut zur Analyse von Angreifermethoden geeignet ist. IIm Vergleich zu Web-Honeypots wie Glastopf (#link("github.com/mushorg/glastopf")) ist Cowrie deutlich einfacher einzurichten und zu betreiben, insbesondere da bereits ein fertiges Docker-Image verfügbar ist. Außerdem mussten wir den Umfang des Monitorings begrenzen, weshalb die Unterstützung eines einzelnen Honeypot-Typs sinnvoll erschien. Cowrie erlaubt so eine fokussierte Untersuchung von Angriffsmustern bei gleichzeitig überschaubarem Aufwand.
+Als Honeypots wurde *Cowrie* (#link("github.com/cowrie/cowrie")) gewählt, da es speziell auf SSH-Angriffe ausgelegt ist und damit besonders gut zur Analyse von Angreifermethoden geeignet ist. Im Vergleich zu Web-Honeypots wie Glastopf (#link("github.com/mushorg/glastopf")) ist Cowrie deutlich einfacher einzurichten und zu betreiben, insbesondere da bereits ein fertiges Docker-Image verfügbar ist. Außerdem mussten wir den Umfang des Monitorings begrenzen, weshalb die Unterstützung eines einzelnen Honeypot-Typs sinnvoll erschien. Cowrie erlaubt so eine fokussierte Untersuchung von Angriffsmustern bei gleichzeitig überschaubarem Aufwand.
 
 Für die Verarbeitung und Analyse der Honeypot-Logs wurden Teile des ELK-Stacks bestehend aus *Filebeat*, *Logstash* und *Elasticsearch* eingesetzt. Zum einen geschah dies aus eigenem Interesse, da der ELK-Stack häufig in Unternehmensumgebungen verwendet wird, zum anderen ermöglicht die "für einanander bestimmte" Zusammenlegung der einzelnen Komponenten eine effiziente Erfassung, Verarbeitung und Strukturierung der Logs innerhalb eines konsistenten Systems.
 
@@ -83,6 +83,11 @@ Als Reverse Proxy und Loadbalancer wurde *NGINX* eingesetzt, da es sich durch ei
 
 == Systemkomponenten
 === Cowrie
+Cowrie als Honeypot bietet einige Konfigurationsmöglichkeiten. Standardmäßig würde Cowrie eine Standardkonfiguration (cowrie.cfg), sowie eine Standarddatei für zugelassene Anmeldeinformationen (userdb.txt) verwenden. Mithilfe von mounts im docker-compose.yml können diese Dateien überschrieben werden. Beim Hochfahren einer Cowrie-Instanz werden die konfigurierten Dateien gelesen und es können ssh-Verbindungen zum Honeypot hergestellt werden. Durch den Befehl ssh -p 2222 \<username\>\@\<IPvonHoneypot\> kann sich mit einem der Honeypots verbunden werden. 
+Unmittelbar nach Eingabe des Befehl wird eine Eingabe von Benutzername und Passwort gefordert. Welche Benutzernamen und Passwörter zugelassen sind, wird in der userdb.txt festgehalten. Im Honeypot können dann Befehle, wie z.B. whoami ausgeführt werden. 
+
+Während dem Prozess des Anmeldens oder des Verbindungsversuches des Angreifers werden selbst nur die Verbindungsversuche schon geloggt. Alles was danach passiert, wird ebenfalls geloggt und in einer JSON-Datei (cowrie.json) gespeichert. Die Ausgabe als JSON-Datei anstelle von tty-Logs muss vorher explizit in der cowrie.cfg erlaubt werden.
+
 === Filebeat, Logstash, Elastic Search
 === Vue.js
 === Springboot
