@@ -83,23 +83,36 @@ Als Reverse Proxy und Loadbalancer wurde *NGINX* eingesetzt, da es sich durch ei
 
 == Systemkomponenten
 === Cowrie
-Cowrie als Honeypot bietet einige Konfigurationsmöglichkeiten. Standardmäßig würde Cowrie eine Standardkonfiguration (cowrie.cfg), sowie eine Standarddatei für zugelassene Anmeldeinformationen (userdb.txt) verwenden. In der cowrie.cfg können unter anderem Hostname, Betriebssystemname, SSH-Version, IP-Adresse, Ports und andere Variablen definiert werden. @cabral2021advanced Mithilfe von mounts im docker-compose.yml können diese Dateien überschrieben werden. Beim Hochfahren einer Cowrie-Instanz werden die konfigurierten Dateien gelesen und es können ssh-Verbindungen zum Honeypot hergestellt werden. Durch den Befehl ssh -p 2222 \<username\>\@\<IPvonHoneypot\> kann sich mit einem der Honeypots verbunden werden. 
+Cowrie als Honeypot bietet einige Konfigurationsmöglichkeiten. Standardmäßig würde Cowrie eine Standardkonfiguration (cowrie.cfg), sowie eine Standarddatei für zugelassene Anmeldeinformationen (userdb.txt) verwenden. In der cowrie.cfg können unter anderem Hostname, Betriebssystemname, SSH-Version, IP-Adresse, Ports und andere Variablen definiert werden @cabral2021advanced. Mithilfe von mounts im docker-compose.yml können diese Dateien überschrieben werden. Beim Hochfahren einer Cowrie-Instanz werden die konfigurierten Dateien gelesen und es können ssh-Verbindungen zum Honeypot hergestellt werden. Durch den Befehl ssh -p 2222 \<username\>\@\<IPvonHoneypot\> kann sich mit einem der Honeypots verbunden werden. 
 Unmittelbar nach Eingabe des Befehl wird eine Eingabe von Benutzername und Passwort gefordert. Welche Benutzernamen und Passwörter zugelassen sind, wird in der userdb.txt festgehalten. Im Honeypot können dann Befehle, wie z.B. whoami ausgeführt werden. 
 
 Während dem Prozess des Anmeldens oder des Verbindungsversuches des Angreifers werden selbst nur die Verbindungsversuche schon geloggt. Alles was danach passiert, wird ebenfalls geloggt und in einer JSON-Datei (cowrie.json) gespeichert. Die Ausgabe als JSON-Datei anstelle von tty-Logs muss vorher explizit in der cowrie.cfg erlaubt werden.
 
 === Filebeat, Logstash, Elastic Search
-Um die Logs des Honeypots zu sammeln und weiterzuleiten wurde sich für Filebeat, Logstash und ElasticSearch entschieden. Filebeat kümmert sich darum die entstandenen Logs von Cowrie zu sammeln. Dies geschieht durch den mount der Cowrie Logs mit den darin vorhandenen cowrie.json Dateien in Kombination mit der Filebeat-Konfiguration (filebeat.yml).
-In der filebeat.yml wird konfiguriert, dass die Logs in Echtzeit gelesen werden (über den typ filestream) und jeder Cowrie-Honeypot eine unterschiedliche id hat, um die Logs im späteren Verlauf unterscheiden zu können. In der filebeat.yml wird ebenso der Output angegeben, wohin die Logs weitergeleitet werden sollen. Als Output wird der Host angegeben, in diesem Fall Logstash.
+Um die Logs des Honeypots zu sammeln und weiterzuleiten wurde sich für Filebeat, Logstash und ElasticSearch entschieden. Filebeat kümmert sich darum die entstandenen Logs von Cowrie zu sammeln. Dies geschieht durch den mount der Cowrie Logs mit den darin vorhandenen cowrie.json Dateien in Kombination mit der Filebeat Konfiguration (filebeat.yml).
+In der filebeat.yml wird konfiguriert, dass die Logs in Echtzeit gelesen werden (über den typ filestream) und jeder Cowrie Honeypot eine unterschiedliche id hat, um die Logs im späteren Verlauf unterscheiden zu können. In der filebeat.yml wird ebenso der Output angegeben, wohin die Logs weitergeleitet werden sollen. Als Output wird der Host angegeben, in diesem Fall Logstash. Außerdem fungiert Filebeat als Gateway zwischen dem Attacker-Netzwerk und dem Internal-Netzwerk und ist daher in beiden Netzwerken angebunden, um die Logs weiterzuleiten.
 
-Logstash ist ein Datenverarbeitungs-Pipeline-Tool, das Daten transformiert und an Zielsysteme wie in diesem Fall ElasticSearch weiterleitet. Mittels der Erweiterung GeoIP können zusätzlich IP-Adressen in den aufgelöst werden und Geodaten, wie Koordinaten oder Stadt, in die Logs hinzufügen. Konfiguriert wird Logstash in einer Konfigurationsdatei (logstash.conf).
+Logstash ist ein Datenverarbeitungs-Pipeline-Tool, das Daten transformiert und an Zielsysteme wie in diesem Fall ElasticSearch weiterleitet. Mittels der Erweiterung GeoIP können zusätzlich IP Adressen in den aufgelöst werden und Geodaten, wie Koordinaten oder Stadt, in die Logs hinzufügen. Konfiguriert wird Logstash in einer Konfigurationsdatei (logstash.conf).
 In der logstash.conf können unter anderem Filter angegeben werden, dass z.B. nur aktuelle Logs und nur Logs, die von Cowrie stammen, genommen werden. Am Ende der Konfigurationsdatei wird wieder der Output angegeben. Als Output wird in diesem Fall der Host von ElasticSearch angegeben.
 
 ElasticSearch speichert die gesammelten und transformierten Daten nahezu in Echtzeit. Mithilfe von ElasticSearch können die Logs der Cowrie-Honeypots einfach durchsucht und abgerufen werden.
+
+
 === Vue.js
+
+Das Frontend wurde mit Vue.js unter Nutzung der Composition API umgesetzt. Es dient in erster Linie der Visualisierung und Verwaltung der im System gesammelten Daten. Über verschiedene Dashboards können Honeypot Logs eingesehen und ausgewertet werden. Zusätzlich bietet das Frontend ein User-Management, bei dem Rollen und Zugriffsrechte berücksichtigt werden. Da die Anwendungslogik bewusst im Backend gekapselt wurde, besteht die Hauptaufgabe des Frontends im regelmäßigen Polling der Backend API, um aktuelle Daten (Logs, User-Informationen) darzustellen. Dadurch bleibt das Frontend schlank und übersichtlicher, während die eigentliche Logik zentralisiert im Backend abgebildet ist.
+
 === Springboot
+
+Das Backend wurde mit Spring Boot umgesetzt und fungiert als zentrale Schnittstelle zu den beiden Datenbanken. Neben der Weiterleitung von Logdaten aus Elasticsearch ist es für das gesamte User-Management verantwortlich. Hierbei kommt ein rollenbasiertes Zugriffssystem (Role-Based Access Control) zum Einsatz, welches durch Spring Security realisiert wird. Die Architektur folgt einem klassischen Domain-Ansatz mit klar getrennten Schichten d.h. Controller, DTOs, und Services. Somit bleibt die Logik wartbar, erweiterbar und klar strukturiert.
+
 === PostgreSQL
+
+PostgreSQL wird ausschließlich für das User-Management und die Verwaltung von Tokens verwendet. Durch die Anbindung an Spring Security lassen sich Authentifizierung und Autorisierung effizient und sicher umsetzen. Diese klare Trennung zwischen Logdaten (Elasticsearch) und Benutzerdaten (PostgreSQL) ermöglicht eine saubere Rollenverteilung zwischen Analyse- und Verwaltungsaufgaben und erhöht die Sicherheit des Gesamtsystems.
+
 === NGINX
+
+Als Reverse Proxy und Load Balancer übernimmt NGINX mehrere zentrale Aufgaben in der Architektur. Zum einen verteilt es Anfragen auf mehrere Backend Instanzen und sorgt so für Lastverteilung und Failover. Zum anderen übernimmt es das Routing: Frontend Anfragen werden an Vue.js weitergeleitet, API-Calls gezielt an das Spring Boot Backend. Darüber hinaus werden auch Logstash Instanzen über NGINX angebunden, sodass die Last der eingehenden Logs effizient auf drei Instanzen verteilt wird. Damit trägt NGINX sowohl zur Skalierbarkeit als auch zur Ausfallsicherheit des Gesamtsystems bei.
 
 #pagebreak()
 
