@@ -47,8 +47,6 @@ public class ElasticsearchConfig {
                 );
 
         RestClient restClient = builder.build();
-
-        // Transport und Client
         RestClientTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
 
         return new ElasticsearchClient(transport);
