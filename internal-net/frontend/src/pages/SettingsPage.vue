@@ -13,7 +13,7 @@
                             <p v-if="Object.keys(validationErrors).length" class="text-center">
                                 <small class="text-danger">Something went wrong.</small>
                             </p>
-                            
+                            <!-- Input Current Pass -->
                             <div class="mb-3">
                                 <label for="currentPassword" class="form-label">Current Password</label>
                                 <input
@@ -24,6 +24,7 @@
                                 />
                             </div>
                             
+                            <!-- Input new Pass -->
                             <div class="mb-3">
                                 <label for="newPassword" class="form-label">New Password</label>
                                 <input
@@ -39,6 +40,7 @@
                                 </div>
                             </div>
                             
+                            <!-- Confirm Pass -->
                             <div class="mb-3">
                                 <label for="confirmationPassword" class="form-label">Confirm Password</label>
                                 <input
@@ -52,6 +54,7 @@
                                 </div>
                             </div>
                             
+                            <!-- Submit Button -->
                             <div class="d-grid gap-2">
                                 <button
                                 :disabled="isSubmitting || hasErrors"

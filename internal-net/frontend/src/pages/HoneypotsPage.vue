@@ -2,7 +2,7 @@
     <Layout>
         <div class="container mt-4">
             <h2>Honeypots</h2>
-            
+            <!-- Dropdown to select Honeypot -->
             <div class="mb-3">
                 <select
                 id="honeypotSelect"
@@ -15,7 +15,7 @@
                 </option>
             </select>
         </div>
-        
+        <!-- Log Table -->
         <div class="card">
             <div class="card-header text-center">
                 Logs für: {{ currentHoneypot.name }}
