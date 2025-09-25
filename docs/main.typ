@@ -234,7 +234,9 @@ Hier wird das veth-Paar erstellt und aufgesetzt, falls es noch nicht existiert. 
 Analog dazu fungiert das Skript "veth-shutdown.sh" Skript, welches unteranderem das vorher angelegte veth-Paar wieder löscht.
 
 == Mögliche Alternativen
-
+Anstelle des ELK-Stacks wäre auch eine Lösung mit Splunk möglich gewesen, die teils einfacher zu administrieren sind und ebenfalls leistungsfähige Visualisierungen und Alarmierungen bieten. 
+Für das Frontend hätten sich React oder Angular angeboten, die eine größere Community und viele vorgefertigte Komponenten mitbringen. Das Backend hätte mit Node.js umgesetzt werden können, was asynchrones Event-Handling erleichtert, oder mit Django, das durch sein integriertes Admin-Interface besonders schnell produktiv nutzbar ist. 
+Bei der Datenbank wären neben PostgreSQL auch MySQL oder eine NoSQL-Lösung wie MongoDB denkbar gewesen: MySQL hätte ebenfalls zuverlässig relationale Strukturen für Benutzer- und Rollenmanagement abgebildet, während MongoDB durch flexible Dokumentenspeicherung vor allem für unstrukturierte oder variable Logdaten geeignet wäre.
 
 #pagebreak()
 
