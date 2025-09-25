@@ -20,3 +20,4 @@ services:
       - ../attacker-net/logs/cowrie1:/logs/cowrie1:ro
       - ../attacker-net/logs/cowrie2:/logs/cowrie2:ro
       - ../attacker-net/logs/cowrie3:/logs/cowrie3:ro
+      - ../attacker-net/logs/testlogs:/logs/testlogs:ro

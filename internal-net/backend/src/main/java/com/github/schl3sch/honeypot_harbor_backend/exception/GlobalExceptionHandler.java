@@ -14,6 +14,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // Custom error when password failed
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidationException(MethodArgumentNotValidException ex) {
         Map<String, String> fieldErrors = new HashMap<>();
@@ -30,6 +31,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    // when admin logs in with default admin credentials
     @ExceptionHandler(Exceptions.MustChangePasswordException.class)
     public ResponseEntity<ApiError> handleMustChangePasswordException(Exceptions.MustChangePasswordException ex) {
         ApiError error = new ApiError(

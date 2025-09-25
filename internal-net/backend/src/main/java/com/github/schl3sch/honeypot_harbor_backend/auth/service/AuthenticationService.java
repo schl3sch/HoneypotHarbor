@@ -35,6 +35,7 @@ public class AuthenticationService {
         if(!request.getPassword().equals(request.getPasswordConfirmation())){
             throw new IllegalArgumentException("Passwords do not match.");
         }
+        //create new user object
         var user = User.builder()
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
@@ -79,6 +80,7 @@ public class AuthenticationService {
                 .build();
     }
 
+    // used to protect change initial admin password page in frontend
     public void checkIfInitialAdmin(String email) {
         var user = repository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
@@ -88,6 +90,7 @@ public class AuthenticationService {
         }
     }
 
+    // Only after initial setup needed if admin logs in
     public AuthenticationResponse changeInitialAdminPassword(ChangeInitialAdminPasswordRequest request) {
 
         var user = repository.findByEmail(request.getEmail())
