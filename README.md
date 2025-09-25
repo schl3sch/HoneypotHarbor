@@ -76,7 +76,9 @@ cd HoneypotHarbor
 
 Templates: [internal.env](./internal-net/internal.env.template), [.env](./internal-net/frontend/.env.template)
 
-3. Run the startup script (requires `sudo` for creating shim networks + virtual ethernet)
+3. Add a GeoIP database in the [geoip](./internal-net/logstash/geoip) directory. HoneypotHarbor was tested with MaxMind's GeoLite 2 City database, which can be downloaded for free on their [website](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data/) after creating an account.
+
+4. Run the startup script (requires `sudo` for creating shim networks + virtual ethernet)
 > There are two startup scripts:
 > - startup.sh → use when you have a physical Network Interface Card.
 > - veth-startup.sh → use when no suitable NIC is available (creates a virtual veth pair).
@@ -92,14 +94,14 @@ This script will:
 * setup the directorys for honeypot logs
 * Start containers for the honeypots (Cowrie), gateway, Logstash and the web services.
 
-4. Interact with the honeypots (example)
+5. Interact with the honeypots (example)
 
 ```
 # connect to the first Cowrie honeypot
 ssh -p 2222 username@192.168.1.131
 ```
 
-5. Open the web UI
+6. Open the web UI
 
 * Frontend: `http://192.168.1.112`
 * Initial admin account:
@@ -109,11 +111,16 @@ ssh -p 2222 username@192.168.1.131
 
 > On first login you will be prompted to change the password.
 
-6. Shutdown (use the matching script):
+7. Shutdown (use the matching script):
 ```bash
 sudo ./shutdown.sh        # if started with startup.sh
 sudo ./veth-shutdown.sh   # if started with veth-startup.sh
 ```
+
+---
+
+## Dummy Logs
+HoneypotHarbor provides dummy logs to fill the Elasticsearch database with documents. To do that, execute the [write-test-logs-elastic.sh](./test/write-test-logs-elastic.sh) script.
 
 ---
 
