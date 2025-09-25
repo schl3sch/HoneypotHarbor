@@ -51,7 +51,6 @@ services:
     container_name: honeypotharbor-logstash-1
     environment:
       - xpack.monitoring.enabled=true
-      - ELASTIC_USERNAME=${ELASTIC_USER}
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     volumes:
       - ./logstash/pipeline:/usr/share/logstash/pipeline
@@ -69,7 +68,6 @@ services:
     container_name: honeypotharbor-logstash-2
     environment:
       - xpack.monitoring.enabled=true
-      - ELASTIC_USERNAME=${ELASTIC_USER}
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     volumes:
       - ./logstash/pipeline:/usr/share/logstash/pipeline
@@ -87,7 +85,6 @@ services:
     container_name: honeypotharbor-logstash-3
     environment:
       - xpack.monitoring.enabled=true
-      - ELASTIC_USERNAME=${ELASTIC_USER}
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     volumes:
       - ./logstash/pipeline:/usr/share/logstash/pipeline
@@ -118,7 +115,6 @@ services:
       - POSTGRES_DB=${POSTGRES_NAME}
       - POSTGRES_USER=${POSTGRES_ADMIN_USER}
       - POSTGRES_PASSWORD=${POSTGRES_ADMIN_PASS}
-      - ELASTIC_USER=${ELASTIC_USER}
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     healthcheck:
       test: ["CMD", "wget", "--spider", "--header=x-api-key: ${API_KEY}", "http://localhost:8080/actuator/health"]
@@ -147,7 +143,6 @@ services:
       - POSTGRES_DB=${POSTGRES_NAME}
       - POSTGRES_USER=${POSTGRES_ADMIN_USER}
       - POSTGRES_PASSWORD=${POSTGRES_ADMIN_PASS}
-      - ELASTIC_USER=${ELASTIC_USER}
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     healthcheck:
       test: ["CMD", "wget", "--spider", "--header=x-api-key: ${API_KEY}", "http://localhost:8080/actuator/health"]
@@ -176,7 +171,6 @@ services:
       - POSTGRES_DB=${POSTGRES_NAME}
       - POSTGRES_USER=${POSTGRES_ADMIN_USER}
       - POSTGRES_PASSWORD=${POSTGRES_ADMIN_PASS}
-      - ELASTIC_USER=${ELASTIC_USER}
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     healthcheck:
       test: ["CMD", "wget", "--spider", "--header=x-api-key: ${API_KEY}", "http://localhost:8080/actuator/health"]
