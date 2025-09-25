@@ -2,7 +2,7 @@ package com.github.schl3sch.honeypot_harbor_backend.analytics.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.schl3sch.honeypot_harbor_backend.analytics.dto.HoneypotResponse;
-import com.github.schl3sch.honeypot_harbor_backend.analytics.dto.StatisticsResponse;
+import com.github.schl3sch.honeypot_harbor_backend.analytics.dto.LocationResponse;
 import com.github.schl3sch.honeypot_harbor_backend.analytics.dto.TopPasswordsResponse;
 import com.github.schl3sch.honeypot_harbor_backend.analytics.dto.TopUsernamesResponse;
 import com.github.schl3sch.honeypot_harbor_backend.analytics.service.AnalyticsService;
@@ -31,7 +31,7 @@ public class AnalyticsController {
     }
 
     @GetMapping("/statistics/location")
-    public ResponseEntity<List<StatisticsResponse>> getLocation() {
+    public ResponseEntity<List<LocationResponse>> getLocation() throws IOException {
         return ResponseEntity.ok(service.getLocationForHoneypot());
     }
 
