@@ -4,6 +4,7 @@
 #               Startup Script                #
 ###############################################
 
+set -e
 NIC=$1
 echo "Using network interface: $NIC"
 
