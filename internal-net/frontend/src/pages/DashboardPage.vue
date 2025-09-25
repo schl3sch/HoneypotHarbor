@@ -86,7 +86,7 @@
 
 <script>
 import Layout from '../components/Layout.vue'
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch, computed, onBeforeUnmount } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 import { auth } from '../store/auth.js'
@@ -123,6 +123,7 @@ export default {
         const attacksByTime = ref([])
         let chartInstance = null
         let map, markersCluster
+        let pollingInterval = null
         
         // Helper function for safe fetching
         async function safeFetch(url, fallback = null) {
@@ -287,7 +288,7 @@ export default {
             ])
 
             // Realtime Update (Polling)
-            setInterval(() => {
+            pollingInterval = setInterval(() => {
                 fetchTopUsernames()
                 fetchTopPasswords()
                 fetchAttackCoordinates()
@@ -306,6 +307,10 @@ export default {
                 marker.bindPopup(`<strong>Attacks:</strong> ${attack.count}<br>Coordinates: ${attack.lat}, ${attack.lng}`)
                 markersCluster.addLayer(marker)
             })
+        })
+
+        onBeforeUnmount(() => {
+            if (pollingInterval) clearInterval(pollingInterval)
         })
         
         return { 

@@ -66,7 +66,7 @@ export default {
             ROLE_ANALYST: 'Analyst',
             ROLE_ADMIN: 'Admin'
         }
-        let intervalId = null
+        let pollingInterval = null
         
         // Fetch helper funktion
         async function safeFetch(url, fallback = null) {
@@ -110,11 +110,11 @@ export default {
             await checkIfAdmin()
             
             // Polling
-            intervalId = setInterval(loadUsers, 5000)
+            pollingInterval = setInterval(loadUsers, 5000)
         })
         
         onBeforeUnmount(() => {
-            if (intervalId) clearInterval(intervalId)
+            if (pollingInterval) clearInterval(pollingInterval)
         })
         
         const confirmRoleChange = (user, newRole) => {

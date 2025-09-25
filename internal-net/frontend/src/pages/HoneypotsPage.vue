@@ -78,7 +78,7 @@ export default {
         
         // get all honeypots 
         async function fetchHoneypots() {
-            const res = await safeFetch('/api/v1/analytics/statistics/location', [])
+            const res = await safeFetch('/api/v1/analytics/honeypots', [])
             honeypots.value = res.map((hp, idx) => ({
                 id: hp.honeypotId || idx + 1,
                 name: `Honeypot ${hp.honeypotId || idx + 1}`
@@ -93,13 +93,27 @@ export default {
         // get logs for current honeypot
         async function fetchLogsForHoneypot(id) {
             if (!id) return
+            
             const res = await safeFetch(`/api/v1/analytics/honeypots/${id}/logs`, [])
+            
             logs.value = {
-                [id]: res.map(log => ({
-                    timestamp: log.timestamp || 'n/a',
-                    srcIP: log.srcIP || 'n/a',
-                    message: log.message || JSON.stringify(log)
-                }))
+                [id]: res.map(log => {
+                    // Convert timestamp to human-readable date
+                    let formattedDate = 'n/a'
+                    if (log.timestamp) {
+                        try {
+                            formattedDate = new Date(log.timestamp).toLocaleString() 
+                        } catch (e) {
+                            console.warn('Invalid timestamp:', log.timestamp)
+                        }
+                    }
+                    
+                    return {
+                        timestamp: formattedDate,
+                        srcIP: log.source_ip || 'n/a',
+                        message: log.message || 'n/a'
+                    }
+                })
             }
         }
         
@@ -109,13 +123,13 @@ export default {
             await fetchLogsForHoneypot(selectedHoneypot.value)
         }
         
-
+        
         const currentHoneypot = computed(() =>
-            honeypots.value.find(hp => hp.id === selectedHoneypot.value) || { name: '' }
+        honeypots.value.find(hp => hp.id === selectedHoneypot.value) || { name: '' }
         )
         
         const currentLogs = computed(() =>
-            logs.value[selectedHoneypot.value] || []
+        logs.value[selectedHoneypot.value] || []
         )
         
         onMounted(async () => {

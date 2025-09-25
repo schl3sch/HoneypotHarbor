@@ -22,13 +22,13 @@ import java.util.Map;
 public class AnalyticsController {
     private final AnalyticsService service;
 
-    //@PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/honeypots")
     public ResponseEntity<List<HoneypotResponse>> getHoneypots() throws IOException {
         return ResponseEntity.ok(service.getAllHoneypots());
     }
     
-    //@PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/honeypots/{id}/logs")
     public ResponseEntity<List<JsonNode>> getLogsForHoneypot(@PathVariable String id) throws IOException {
         return ResponseEntity.ok(service.getLogsForHoneypot(id));
