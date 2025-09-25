@@ -141,7 +141,7 @@ Für die Backend Upstream Gruppe sorgt NGINX-Failover dafür, dass Anfragen auto
 ```conf
 location /api/ {
     proxy_pass http://backend;
-    proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+    proxy_next_upstream error timeout invalid_header http_500 http_503 http_504;
     proxy_next_upstream_tries 3;
     proxy_connect_timeout 2s;
     proxy_read_timeout 15s;
@@ -150,8 +150,6 @@ location /api/ {
 Damit wird die Verfügbarkeit der API auch bei Ausfällen einzelner Backend-Server gewährleistet.
 
 Die Log Weiterleitung von Filebeat zu Logstash wurde der Stream-Modus von NGINX verwendet, wodurch eingehende TCP Verbindungen ebenfalls auf mehrere Logstash Instanzen verteilt werden.
-
-=== Vue.js Composition API
 
 == Schwierigkeiten & Lösungen
 
@@ -210,12 +208,11 @@ sudo ip route add 192.168.1.0/25 dev internal-net
 Durch diese Maßnahmen konnte der Host sowohl Anfragen an die Honeypots als auch an das Monitoring-Frontend weiterleiten. Die zuvor bestehende Kommunikationsbarriere zwischen Host und Containern wurde aufgehoben, sodass die Infrastruktur konsistent nutzbar war. @oddbitUsingDocker
 
 
-
 === Problematik fehlender Netzwerkkarte
 
 Ein grundsätzliches Problem bei der Nutzung von virtuellen LAN-Netzwerken (VLAN) liegt in der Funktionsweise von Macvlan. Um Macvlan in einem Projekt aufzusetzen, ist es notwendig, dass die Netzwerkhardware den "Promiscuous Mode" unterstützt. @dockerMacvlan Dieser Modus funktioniert meistens nicht oder mit starken Einschränkungen mit Netzwerkhardware, die kabellos operiert (z.B. WLAN-Netzwerkkarten). @wiresharkWifiCapture Promiscuous Mode funktioniert realistisch nur mit physischer Ethernet-Hardware.
 
-Diese Problematik wirkt sich maßgeblich auf den Entwicklungsprozess von HoneypotHarbor aus, denn dieses Projekt erfordert das Aufsetzen mehrerer voneinander getrennten Netzwerke. Dies wird benötigt, um das "attacker-net", in welchem die Honeypots drinnen sind, von dem "internal-net", welches die Auswertungssoftware zu den Honeypots beinhaltet, zu separieren. Da aber nicht alle an HoneypotHarbor Mitwirkenden über Arbeitshardware mit Ethernetanschluss verfügen, muss eine Möglichkeit gefunden werden, die physische Ethernet-Schnittstelle digital zu simulieren.
+Diese Problematik wirkt sich maßgeblich auf den Entwicklungsprozess von Honeypot Harbor aus, denn dieses Projekt erfordert das Aufsetzen mehrerer voneinander getrennten Netzwerke. Dies wird benötigt, um das "attacker-net", in welchem die Honeypots drinnen sind, von dem "internal-net", welches die Auswertungssoftware zu den Honeypots beinhaltet, zu separieren. Da aber nicht alle an HoneypotHarbor Mitwirkenden über Arbeitshardware mit Ethernetanschluss verfügen, muss eine Möglichkeit gefunden werden, die physische Ethernet-Schnittstelle digital zu simulieren.
 
 Hier kommt die veth-Technologie ins Spiel. Mit veth sollen virtuelle Ethernet-Geräte dargestellt werden. @vethManPage Dabei wird immer ein veth-Paar erstellt (veth0 und veth1). Dazu wurde das ursprüngliche Startup-Shellskript ganz oben um den folgenden Abschnitt ergänzt:
 
@@ -242,11 +239,31 @@ Bei der Datenbank wären neben PostgreSQL auch MySQL oder eine NoSQL-Lösung wie
 
 = Reflektion
 == Lessons Learned
+
+Im Verlauf der Projektarbeit konnten insbesondere auf technischer Ebene wesentliche Erkenntnisse gewonnen werden.
+Ein zentrales Lernfeld stellte der Umgang mit Container-Netzwerken dar. Durch die Konfiguration von macvlan sowie den damit verbundenen veth / shim Netwerk Konzepten unter Linux wurde ein vertieftes Verständnis für die Netzwerkarchitektur in Docker-Umgebungen erlangt. Dies ermöglichte die gezielte Anbindung des Honeypot-Netzwerks an die bestehende Infrastruktur und schuf die Grundlage für die Trennung von "Attacker"- und "Internal"-Netzwerken.
+
+Darüber hinaus wurden erstmals Aspekte der Ausfallsicherheit und des Load-Balancings systematisch betrachtet. Durch den Einsatz von NGINX zur Lastverteilung auf mehrere Logstash, Frontend und Backend Instanzen konnte nachvollzogen werden, wie Skalierbarkeit und Fehlertoleranz praktisch umgesetzt werden kann.
+
+Ein weiterer Schwerpunkt lag im Bereich der API-Entwicklung und -Absicherung. Hierbei wurde insbesondere erlernt wie man eine API mit verschiedenen Techniken (API Keys, Role-Based Access, JWT) absichert. Besonders auch der strukturierte Aufbau in Controller, Services und Data Transfer Objects sorgte für Übersichtlichkeit.
+
+Durch das Debugging von Requests und Responses mit unteranderem Burp Suite konnte ein tieferes Verständnis für die Funktionsweise der API und die Interaktion zwischen Client und Server gewonnen werden. Dies ermöglichte nicht nur die Identifikation und Behebung von Fehlern, sondern auch die Analyse potenzieller Sicherheitsrisiken und die Optimierung der Kommunikationsprozesse.
+
 == Herausforderungen
+
+Die Einrichtung des macvlan-Netzwerks stellte zu Beginn eine wesentliche Hürde dar. Da einschlägige Dokumentationen und praxisnahe Beispiele nur eingeschränkt verfügbar waren, gestaltete sich die Konfiguration zeitaufwendig und erforderte zahlreiche Iterationen. 
+
+Darüber hinaus wurde die Systemausführung auf lokalen Entwicklungsrechnern als limitierender Faktor identifiziert. Die Vielzahl parallel laufender Container führte zu hoher Ressourcenauslastung, langen Startzeiten und eingeschränkter Testbarkeit. Eine optimierte Testumgebung, konnte im Projektzeitraum nicht umgesetzt werden, sollte jedoch in zukünftigen Arbeiten berücksichtigt werden, da gerade gegen Ende Elastic Search durch die hohe RAM Nutzung einige Probleme bereitete (ERROR: Elasticsearch died while starting up, with exit code 137).
+
+Auch im Bereich des Frontends zeigte sich, dass die performante Darstellung großer Datenmengen komplexer ist als zunächst angenommen. Hier besteht für künftige Entwicklungen die Möglichkeit, durch effizientere Polling Strategien, Pagination oder Streaming-Ansätze Verbesserungen zu erzielen.
+
+Die Handhabung von Fehlern und Ausnahmen im Backend erwies sich ebenfalls als herausfordernd. Es wurde deutlich, dass eine frühzeitige Implementierung von Custom Exceptions sowie eine einheitliche Fehlerstruktur entscheidend für ein stabiles Zusammenspiel mit dem Frontend sind. Diese Aspekte wurden im Projektverlauf nur teilweise berücksichtigt, sodass sich hier ein erhebliches Verbesserungspotenzial abzeichnet.
 
 #pagebreak()
 
 = Fazit
+
+Die Arbeit ermöglichte wertvolle Einblicke in Netzwerktechnik, Containerisierung und das Zusammenspiel komplexer Systemkomponenten. Besonders die Integration von Angriffserfassung, Loganalyse und Visualisierung zeigte die Bedeutung von Sicherheitsmechanismen, Skalierbarkeit und Ausfallsicherheit. Gleichzeitig wurde Verbesserungspotenzial in Bereichen wie Performanz, Fehlerbehandlung und Testing deutlich. Funktionale Ähnlichkeiten zu SIEM-Systemen bestehen, doch Themen wie langfristige Datenhaltung, Performance und Alerting wurden noch nicht vertieft. Für die Weiterentwicklung sollten diese Aspekte frühzeitig in der Konzeptionsphase berücksichtigt werden. Besonders bei Elastic Search gebe es mit Machine Learning eine gute Möglichkeit für Anomalieerkennung, dass zwar Anfangs geplant war, zeitlich aber nicht umgesetzt werden konnte.
 
 #pagebreak()
 #bibliography("bibliograpy.bib")
