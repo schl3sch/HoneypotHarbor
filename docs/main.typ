@@ -213,6 +213,25 @@ Durch diese Maßnahmen konnte der Host sowohl Anfragen an die Honeypots als auch
 
 === Problematik fehlender Netzwerkkarte
 
+Ein grundsätzliches Problem bei der Nutzung von virtuellen LAN-Netzwerken (VLAN) liegt in der Funktionsweise von Macvlan. Um Macvlan in einem Projekt aufzusetzen, ist es notwendig, dass die Netzwerkhardware den "Promiscuous Mode" unterstützt. @dockerMacvlan Dieser Modus funktioniert meistens nicht oder mit starken Einschränkungen mit Netzwerkhardware, die kabellos operiert (z.B. WLAN-Netzwerkkarten). @wiresharkWifiCapture Promiscuous Mode funktioniert realistisch nur mit physischer Ethernet-Hardware.
+
+Diese Problematik wirkt sich maßgeblich auf den Entwicklungsprozess von HoneypotHarbor aus, denn dieses Projekt erfordert das Aufsetzen mehrerer voneinander getrennten Netzwerke. Dies wird benötigt, um das "attacker-net", in welchem die Honeypots drinnen sind, von dem "internal-net", welches die Auswertungssoftware zu den Honeypots beinhaltet, zu separieren. Da aber nicht alle an HoneypotHarbor Mitwirkenden über Arbeitshardware mit Ethernetanschluss verfügen, muss eine Möglichkeit gefunden werden, die physische Ethernet-Schnittstelle digital zu simulieren.
+
+Hier kommt die veth-Technologie ins Spiel. Mit veth sollen virtuelle Ethernet-Geräte dargestellt werden. @vethManPage Dabei wird immer ein veth-Paar erstellt (veth0 und veth1). Dazu wurde das ursprüngliche Startup-Shellskript ganz oben um den folgenden Abschnitt ergänzt:
+
+```sh
+# Create a veth pair if it does not exist
+if ! ip link show veth0 &>/dev/null; then
+  echo "Creating veth interface pair."
+  sudo ip link add veth0 type veth peer name veth1
+  sudo ip link set veth0 up
+  sudo ip link set veth1 up
+fi
+```
+
+Hier wird das veth-Paar erstellt und aufgesetzt, falls es noch nicht existiert. Im Rest des Skripts muss jetzt jegliche Erwähnung von eth0 (Netzwerkinterface für einen physischen Ethernetanschluss) durch veth0 ersetzt werden. Damit ist das Startup-Skript nun angepasst auf Geräte ohne Ethernetanschluss. Da der Ansatz mit veth allerdings eher als Notlösung für den Entwicklungsprozess gedacht war, wurde das ursprüngliche Skript "startup.sh" behalten und ein neues Skript "veth-startup.sh" mit den eben genannten Änderungen angelegt.
+
+Analog dazu fungiert das Skript "veth-shutdown.sh" Skript, welches unteranderem das vorher angelegte veth-Paar wieder löscht.
 
 == Mögliche Alternativen
 
