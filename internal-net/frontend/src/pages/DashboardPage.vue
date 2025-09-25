@@ -92,7 +92,6 @@ import { useRouter } from 'vue-router'
 import { auth } from '../store/auth.js'
 import { Chart, registerables } from 'chart.js'
 import L from 'leaflet'
-import cities from 'cities.json';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
@@ -214,27 +213,19 @@ export default {
         }
 
         async function fetchAttackCoordinates() {
-            const cities = await safeFetch(
-                '/api/v1/analytics/statistics/location', 
-                [])
-            const results = []
-            for (const cityObj of cities) {
-                const coords = await cityToCoordinates(cityObj.city)
-                if (coords) {
-                    results.push({ ...coords, count: cityObj.count })
-                }
-            }
+            const data = await safeFetch(
+                '/api/v1/analytics/statistics/location',
+                []
+            )
+            const results = data.map(item => ({
+                lat: item.lat,
+                lng: item.lon, 
+                count: item.count
+            }))
+
             attackCoordinates.value = results
         }
 
-        function cityToCoordinates(city) {
-            const found = cities.find(c => c.name.toLowerCase() === city.toLowerCase());
-            if (!found) {
-                console.warn(`City not found in local cities.json: ${city}`);
-                return null;
-            }
-            return { lat: parseFloat(found.lat), lng: parseFloat(found.lng) };
-        }
 
         
         onMounted(async () => {
