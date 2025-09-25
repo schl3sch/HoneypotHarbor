@@ -14,12 +14,17 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./postgres:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       honeypotharbor-internal-network:
         ipv4_address: 192.168.1.101
 
   elasticsearch:
-    image: elasticsearch:9.1.2
+    image: elasticsearch:9.1.4
     #ports: 
     # - "9200:9200"
     environment:
@@ -29,10 +34,18 @@ services:
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     volumes:
       - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: >
+        curl -s -u elastic:${ELASTIC_PASSWORD} http://localhost:9200/_cluster/health |
+        grep -q '"status":"green"'
+      interval: 30s
+      timeout: 10s
+      retries: 20
     networks:
       honeypotharbor-internal-network:
         ipv4_address: 192.168.1.102
-  
+    mem_limit: 0.5g
+
   logstash-1:
     image: logstash:9.1.2
     container_name: honeypotharbor-logstash-1
@@ -93,8 +106,10 @@ services:
       network: host
     container_name: honeypotharbor-backend-1
     depends_on:
-      - postgres
-      - elasticsearch
+      postgres:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
     #ports: 
     # - "8080:8080"
     environment:
@@ -120,8 +135,10 @@ services:
       network: host
     container_name: honeypotharbor-backend-2
     depends_on:
-      - postgres
-      - elasticsearch
+      postgres:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
     #ports: 
     # - "8080:8080"
     environment:
@@ -147,8 +164,10 @@ services:
       network: host
     container_name: honeypotharbor-backend-3
     depends_on:
-      - postgres
-      - elasticsearch
+      postgres:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
     #ports: 
     # - "8080:8080"
     environment:
