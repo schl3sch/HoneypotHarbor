@@ -85,7 +85,9 @@ services:
         ipv4_address: 192.168.1.105
 
   backend-1:
-    build: ./backend
+    build: 
+      context: ./backend
+      network: host
     container_name: honeypotharbor-backend-1
     depends_on:
       - postgres
@@ -98,6 +100,9 @@ services:
       - POSTGRES_DB=${POSTGRES_NAME}
       - POSTGRES_USER=${POSTGRES_ADMIN_USER}
       - POSTGRES_PASSWORD=${POSTGRES_ADMIN_PASS}
+      - ELASTIC_IP=${ELASTIC_IP}
+      - ELASTIC_USER=${ELASTIC_USER}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     healthcheck:
       test: ["CMD", "wget", "--spider", "--header=x-api-key: ${API_KEY}", "http://localhost:8080/actuator/health"]
       interval: 5s
@@ -108,7 +113,9 @@ services:
         ipv4_address: 192.168.1.106
 
   backend-2:
-    build: ./backend
+    build: 
+      context: ./backend
+      network: host
     container_name: honeypotharbor-backend-2
     depends_on:
       - postgres
@@ -121,6 +128,9 @@ services:
       - POSTGRES_DB=${POSTGRES_NAME}
       - POSTGRES_USER=${POSTGRES_ADMIN_USER}
       - POSTGRES_PASSWORD=${POSTGRES_ADMIN_PASS}
+      - ELASTIC_IP=${ELASTIC_IP}
+      - ELASTIC_USER=${ELASTIC_USER}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     healthcheck:
       test: ["CMD", "wget", "--spider", "--header=x-api-key: ${API_KEY}", "http://localhost:8080/actuator/health"]
       interval: 5s
@@ -131,7 +141,9 @@ services:
         ipv4_address: 192.168.1.107
 
   backend-3:
-    build: ./backend
+    build: 
+      context: ./backend
+      network: host
     container_name: honeypotharbor-backend-3
     depends_on:
       - postgres
@@ -144,6 +156,9 @@ services:
       - POSTGRES_DB=${POSTGRES_NAME}
       - POSTGRES_USER=${POSTGRES_ADMIN_USER}
       - POSTGRES_PASSWORD=${POSTGRES_ADMIN_PASS}
+      - ELASTIC_IP=${ELASTIC_IP}
+      - ELASTIC_USER=${ELASTIC_USER}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     healthcheck:
       test: ["CMD", "wget", "--spider", "--header=x-api-key: ${API_KEY}", "http://localhost:8080/actuator/health"]
       interval: 5s
@@ -154,7 +169,9 @@ services:
         ipv4_address: 192.168.1.108
 
   frontend-1:
-    build: ./frontend
+    build: 
+      context: ./frontend
+      network: host
     container_name: honeypotharbor-frontend-1
     #ports: 
     # - "80:80"
@@ -170,7 +187,9 @@ services:
         ipv4_address: 192.168.1.109
 
   frontend-2:
-    build: ./frontend
+    build: 
+      context: ./frontend
+      network: host
     container_name: honeypotharbor-frontend-2
     #ports: 
     # - "80:80"
@@ -186,7 +205,9 @@ services:
         ipv4_address: 192.168.1.110
   
   frontend-3:
-    build: ./frontend
+    build: 
+      context: ./frontend
+      network: host
     container_name: honeypotharbor-frontend-3
     #ports: 
     # - "80:80"
