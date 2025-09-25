@@ -89,6 +89,13 @@ Unmittelbar nach Eingabe des Befehl wird eine Eingabe von Benutzername und Passw
 Während dem Prozess des Anmeldens oder des Verbindungsversuches des Angreifers werden selbst nur die Verbindungsversuche schon geloggt. Alles was danach passiert, wird ebenfalls geloggt und in einer JSON-Datei (cowrie.json) gespeichert. Die Ausgabe als JSON-Datei anstelle von tty-Logs muss vorher explizit in der cowrie.cfg erlaubt werden.
 
 === Filebeat, Logstash, Elastic Search
+Um die Logs des Honeypots zu sammeln und weiterzuleiten wurde sich für Filebeat, Logstash und ElasticSearch entschieden. Filebeat kümmert sich darum die entstandenen Logs von Cowrie zu sammeln. Dies geschieht durch den mount der Cowrie Logs mit den darin vorhandenen cowrie.json Dateien in Kombination mit der Filebeat-Konfiguration (filebeat.yml).
+In der filebeat.yml wird konfiguriert, dass die Logs in Echtzeit gelesen werden (über den typ filestream) und jeder Cowrie-Honeypot eine unterschiedliche id hat, um die Logs im späteren Verlauf unterscheiden zu können. In der filebeat.yml wird ebenso der Output angegeben, wohin die Logs weitergeleitet werden sollen. Als Output wird der Host angegeben, in diesem Fall Logstash.
+
+Logstash ist ein Datenverarbeitungs-Pipeline-Tool, das Daten transformiert und an Zielsysteme wie in diesem Fall ElasticSearch weiterleitet. Mittels der Erweiterung GeoIP können zusätzlich IP-Adressen in den aufgelöst werden und Geodaten, wie Koordinaten oder Stadt, in die Logs hinzufügen. Konfiguriert wird Logstash in einer Konfigurationsdatei (logstash.conf).
+In der logstash.conf können unter anderem Filter angegeben werden, dass z.B. nur aktuelle Logs und nur Logs, die von Cowrie stammen, genommen werden. Am Ende der Konfigurationsdatei wird wieder der Output angegeben. Als Output wird in diesem Fall der Host von ElasticSearch angegeben.
+
+ElasticSearch speichert die gesammelten und transformierten Daten nahezu in Echtzeit. Mithilfe von ElasticSearch können die Logs der Cowrie-Honeypots einfach durchsucht und abgerufen werden.
 === Vue.js
 === Springboot
 === PostgreSQL
