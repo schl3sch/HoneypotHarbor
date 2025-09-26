@@ -124,11 +124,11 @@ Die Gewährleistung der Sicherheit und die Verhinderung unautorisierter Datenexf
 
 Zunächst wurde ein API-Filter implementiert, der prüft, dass nur Requests mit einem gültigen "X-API-KEY" im Header weitergeleitet werden. Dadurch können ausschließlich autorisierte Clients, die über diesen Schlüssel verfügen, Anfragen an das Backend stellen.
 
-Drauf aufbauend wurde ein weiterer Filter realisiert, der sicherstellt, dass nur Requests mit einem gültigen JWT (JSON Web Token) akzeptiert werden. Auf diese Weise werden alle Endpunkte, die nicht direkt für Login- oder Registrierungsvorgänge zuständig sind, effektiv geschützt. Der JWT-Prozess wird in @spring-jwt abgebildet, welche die Architektur und Funktionsweise veranschaulicht.
+Drauf aufbauend wurde ein weiterer Filter realisiert, der sicherstellt, dass nur Requests mit einem gültigen JWT (JSON Web Token) akzeptiert werden. Auf diese Weise werden alle Endpunkte, die nicht direkt für Login- oder Registrierungsvorgänge zuständig sind, effektiv geschützt. Der JWT-Prozess wird in @spring-jwt abgebildet, welche die Architektur und Funktionsweise veranschaulicht. 
 
 #figure(
   image("assets/spring-security.png", width: 100%),
-  caption: [Spring Security JWT @spring-sec],
+  caption: [Spring Security JWT @githubSpringboot3jwtsecurityjwtsecuritydrawioMain],
 ) <spring-jwt>
 
 Als dritte Sicherheitsmaßnahme wurde Role-Based Access Control (RBAC) umgesetzt, die mit Hilfe der Annotation "\@PreAuthorize" in Spring Security implementiert ist. Dadurch können Endpunkte gezielt basierend auf Benutzerrollen geschützt werden. @springMethodSecurity
