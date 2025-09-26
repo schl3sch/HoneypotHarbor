@@ -123,7 +123,7 @@ sudo ./veth-shutdown.sh   # if started with veth-startup.sh
 HoneypotHarbor provides dummy logs to fill the Elasticsearch database with documents. To do that, execute the [write-test-logs-elastic.sh](./test/write-test-logs-elastic.sh) script. From the project-root directory:
 ```bash
 cd ./test
-./write-test-logs-elastic.sh
+sudo ./write-test-logs-elastic.sh
 ```
 
 ---
