@@ -4,8 +4,6 @@
 #      Shutdown Script Virtual Ethernet       #
 ###############################################
 
-set -e
-
 echo "Stopping Gateway."
 docker compose -f gateway/docker-compose.yml down
 

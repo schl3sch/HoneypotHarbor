@@ -17,7 +17,7 @@
 
 Durch die IoT-Revolution ist es für Hacker zunehmend lukrativ geworden, automatisierte Skripte zu entwickeln, die das Internet durchsuchen und versuchen, Geräte zu kompromittieren @Chopra_2020. Unternehmen hingegen werden oft gezielter angegriffen. Sowohl für digital bewusste Privatpersonen als auch für Unternehmen ist es daher interessant, Einblicke in die Vorgehensweise von Angreifern zu gewinnen, um geeignete Schutzmaßnahmen zu implementieren.
 
-Vor diesem Hintergrund wurde im Rahmen der Praxisarbeit der Vorlesung "Verteilte Systeme" entschieden, ein Honeypot-Netzwerk aufzubauen sowie das dazugehörige Monitoring-Netzwerk zu entwickeln. Die Arbeit verfolgt dabei zwei Hauptziele: Ausfallsicherheit und Skalierbarkeit. Gleichzeitig bot das Projekt die Gelegenheit, sich mit neuen Technologien vertraut zu machen und praktische Erfahrungen im Aufbau sicherer und skalierbarer Netzwerkinfrastrukturen zu sammeln.
+Vor diesem Hintergrund wurde im Rahmen der Praxisarbeit der Vorlesung "Verteilte Systeme" beschlossen, ein Honeypot-Netzwerk aufzubauen und ein entsprechendes Monitoring-System zu entwickeln. Die Arbeit verfolgt dabei zwei Hauptziele: Ausfallsicherheit und Skalierbarkeit. Gleichzeitig bot das Projekt die Gelegenheit, sich mit neuen Technologien vertraut zu machen und praktische Erfahrungen im Aufbau sicherer und skalierbarer Netzwerkinfrastrukturen zu sammeln.
 
 #pagebreak()
 
@@ -37,7 +37,7 @@ Vor diesem Hintergrund wurde im Rahmen der Praxisarbeit der Vorlesung "Verteilte
 - Backend-API für Abfragen und Reports.
 
 *Loadbalancer-Funktion:*
-- Verteilung von Nutzeranfragen (Analysten) über mehrere Front- und Backend-Komponenten.
+- Verteilung von Nutzeranfragen über mehrere Front- und Backend-Komponenten.
 - Sicherstellung von hoher Verfügbarkeit.
 
 *Rollensystem:*
@@ -48,7 +48,7 @@ Vor diesem Hintergrund wurde im Rahmen der Praxisarbeit der Vorlesung "Verteilte
 
 *Sicherheit:* 
 - Strikte Isolation der Honeypot-Systeme vom produktiven Netz.
-- Nur kontrollierter Datentransfer (Logs, Metadaten) über das Gateway.
+- Nur kontrollierter Datentransfer (Logs) über das Gateway.
 - Zugriff aup API nur als Autorisierte Person möglich.
 
 *Skalierbarkeit:*
@@ -69,11 +69,11 @@ Vor diesem Hintergrund wurde im Rahmen der Praxisarbeit der Vorlesung "Verteilte
 ) <data-flow>
 
 == Architektur Entscheidungen
-Als Honeypots wurde *Cowrie* (#link("github.com/cowrie/cowrie")) gewählt, da es speziell auf SSH-Angriffe ausgelegt ist und damit besonders gut zur Analyse von Angreifermethoden geeignet ist. Im Vergleich zu Web-Honeypots wie Glastopf (#link("github.com/mushorg/glastopf")) ist Cowrie deutlich einfacher einzurichten und zu betreiben, insbesondere da bereits ein fertiges Docker-Image verfügbar ist. Außerdem mussten wir den Umfang des Monitorings begrenzen, weshalb die Unterstützung eines einzelnen Honeypot-Typs sinnvoll erschien. Cowrie erlaubt so eine fokussierte Untersuchung von Angriffsmustern bei gleichzeitig überschaubarem Aufwand.
+Als Honeypot wurde *Cowrie* (#link("github.com/cowrie/cowrie")) gewählt, da es speziell auf SSH-Angriffe ausgelegt ist und damit besonders gut zur Analyse von Angreifermethoden geeignet ist. Im Vergleich zu Web-Honeypots wie Glastopf (#link("github.com/mushorg/glastopf")) ist Cowrie deutlich einfacher einzurichten und zu betreiben, insbesondere da bereits ein fertiges Docker-Image verfügbar ist. Außerdem mussten wir den Umfang des Monitorings begrenzen, weshalb die Unterstützung eines einzelnen Honeypot-Typs sinnvoll erschien. Cowrie erlaubt so eine fokussierte Untersuchung von Angriffsmustern bei gleichzeitig überschaubarem Aufwand.
 
 Für die Verarbeitung und Analyse der Honeypot-Logs wurden Teile des ELK-Stacks bestehend aus *Filebeat*, *Logstash* und *Elasticsearch* eingesetzt. Zum einen geschah dies aus eigenem Interesse, da der ELK-Stack häufig in Unternehmensumgebungen verwendet wird, zum anderen ermöglicht die "für einanander bestimmte" Zusammenlegung der einzelnen Komponenten eine effiziente Erfassung, Verarbeitung und Strukturierung der Logs innerhalb eines konsistenten Systems.
 
-Das Frontend wurde mit *Vue.js* umgesetzt, da dieses Framework im Vergleich zu Angular und React besonders einsteigerfreundlich und übersichtlich strukturiert ist. Vue.js ermöglicht eine schnelle Umsetzung von Komponenten bei gleichzeitig geringem Einarbeitungsaufwand, was die Entwicklung effizient gestaltet. Zudem wurden durch positive Erfahrungsberichte aus dem Bekanntenkreis Neugier und Interesse geweckt, während Angular und ähnliche Frameworks aufgrund ihrer Komplexität zunächst eher abschreckend wirkten.
+Das Frontend wurde mit *Vue.js* umgesetzt, da dieses Framework im Vergleich zu Angular und React besonders einsteigerfreundlich und übersichtlich strukturiert ist. Vue.js ermöglicht eine schnelle Umsetzung von Komponenten bei gleichzeitig geringem Einarbeitungsaufwand, was die Entwicklung effizient gestaltet @DYMORA2023. Zudem wurden durch positive Erfahrungsberichte aus dem Bekanntenkreis Neugier und Interesse geweckt, während Angular und ähnliche Frameworks aufgrund ihrer Komplexität zunächst eher abschreckend wirkten.
 
 Das Backend wurde mit *Spring Boot* umgesetzt, da es in Enterprise Umgebungen weit verbreitet ist und damit die Möglichkeit bietet, praktische Erfahrungen zu sammeln sowie Kenntnisse in Java zu vertiefen. Durch das Maven-Plugin-System lässt sich Spring Boot problemlos mit Elasticsearch integrieren, sodass Logs aus dem Honeypot-System effizient verarbeitet und analysiert werden können. Darüber hinaus bietet Spring Boot umfangreiche Sicherheitsfunktionen, durch Spring Security, die eine einfache Umsetzung von Authentifizierung, Autorisierung und Rollenmanagement ermöglichen. 
 
@@ -92,10 +92,10 @@ Während dem Prozess des Anmeldens oder des Verbindungsversuches des Angreifers 
 Um die Logs des Honeypots zu sammeln und weiterzuleiten wurde sich für Filebeat, Logstash und ElasticSearch entschieden. Filebeat kümmert sich darum die entstandenen Logs von Cowrie zu sammeln. Dies geschieht durch den mount der Cowrie Logs mit den darin vorhandenen cowrie.json Dateien in Kombination mit der Filebeat Konfiguration (filebeat.yml).
 In der filebeat.yml wird konfiguriert, dass die Logs in Echtzeit gelesen werden (über den typ filestream) und jeder Cowrie Honeypot eine unterschiedliche id hat, um die Logs im späteren Verlauf unterscheiden zu können. In der filebeat.yml wird ebenso der Output angegeben, wohin die Logs weitergeleitet werden sollen. Als Output wird der Host angegeben, in diesem Fall Logstash. Außerdem fungiert Filebeat als Gateway zwischen dem Attacker-Netzwerk und dem Internal-Netzwerk und ist daher in beiden Netzwerken angebunden, um die Logs weiterzuleiten.
 
-Logstash ist ein Datenverarbeitungs-Pipeline-Tool, das Daten transformiert und an Zielsysteme wie in diesem Fall ElasticSearch weiterleitet. Mittels der Erweiterung GeoIP können zusätzlich IP Adressen in den aufgelöst werden und Geodaten, wie Koordinaten oder Stadt, in die Logs hinzufügen. Konfiguriert wird Logstash in einer Konfigurationsdatei (logstash.conf).
-In der logstash.conf können unter anderem Filter angegeben werden, dass z.B. nur aktuelle Logs und nur Logs, die von Cowrie stammen, genommen werden. Am Ende der Konfigurationsdatei wird wieder der Output angegeben. Als Output wird in diesem Fall der Host von ElasticSearch angegeben.
+Logstash ist ein Datenverarbeitungs Pipeline Tool, das Daten transformiert und an Zielsysteme wie in diesem Fall Elastic Search weiterleitet. Mittels der Erweiterung GeoIP können zusätzlich IP Adressen in den aufgelöst werden und Geodaten, wie Koordinaten oder Stadt, in die Logs hinzufügen. Konfiguriert wird Logstash in einer Konfigurationsdatei (logstash.conf).
+In der logstash.conf können unter anderem Filter angegeben werden, dass z.B. nur aktuelle Logs und nur Logs, die von Cowrie stammen, genommen werden. Am Ende der Konfigurationsdatei wird wieder der Output angegeben. Als Output wird in diesem Fall der Host von Elastic Search angegeben.
 
-ElasticSearch speichert die gesammelten und transformierten Daten nahezu in Echtzeit. Mithilfe von ElasticSearch können die Logs der Cowrie-Honeypots einfach durchsucht und abgerufen werden.
+Elastic Search speichert die gesammelten und transformierten Daten nahezu in Echtzeit. Mithilfe von Elastic Search können die Logs der Cowrie-Honeypots einfach durchsucht und abgerufen werden.
 
 
 === Vue.js
@@ -124,11 +124,11 @@ Die Gewährleistung der Sicherheit und die Verhinderung unautorisierter Datenexf
 
 Zunächst wurde ein API-Filter implementiert, der prüft, dass nur Requests mit einem gültigen "X-API-KEY" im Header weitergeleitet werden. Dadurch können ausschließlich autorisierte Clients, die über diesen Schlüssel verfügen, Anfragen an das Backend stellen.
 
-Drauf aufbauend wurde ein weiterer Filter realisiert, der sicherstellt, dass nur Requests mit einem gültigen JWT (JSON Web Token) akzeptiert werden. Auf diese Weise werden alle Endpunkte, die nicht direkt für Login- oder Registrierungsvorgänge zuständig sind, effektiv geschützt. Der JWT-Prozess wird in @spring-jwt abgebildet, welche die Architektur und Funktionsweise veranschaulicht.
+Drauf aufbauend wurde ein weiterer Filter realisiert, der sicherstellt, dass nur Requests mit einem gültigen JWT (JSON Web Token) akzeptiert werden. Auf diese Weise werden alle Endpunkte, die nicht direkt für Login- oder Registrierungsvorgänge zuständig sind, effektiv geschützt. Der JWT-Prozess wird in @spring-jwt abgebildet, welche die Architektur und Funktionsweise veranschaulicht. 
 
 #figure(
   image("assets/spring-security.png", width: 100%),
-  caption: [Spring Security JWT @spring-sec],
+  caption: [Spring Security JWT @githubSpringboot3jwtsecurityjwtsecuritydrawioMain],
 ) <spring-jwt>
 
 Als dritte Sicherheitsmaßnahme wurde Role-Based Access Control (RBAC) umgesetzt, die mit Hilfe der Annotation "\@PreAuthorize" in Spring Security implementiert ist. Dadurch können Endpunkte gezielt basierend auf Benutzerrollen geschützt werden. @springMethodSecurity
@@ -137,7 +137,7 @@ Als dritte Sicherheitsmaßnahme wurde Role-Based Access Control (RBAC) umgesetzt
 
 Die Verteilung der Anfragen auf mehrere Frontend- und Backend-Instanzen wurde durch NGINX als Reverse Proxy und Loadbalancer verwirklicht. Im HTTP-Bereich werden die Requests für das Frontend mit Round Robin auf drei Server verteilt, während die Backend-Anfragen mit der "Least Connections Strategie" an drei Spring-Boot-Instanzen weitergeleitet werden. Untersuchungen zeigen, dass Round Robin bei Anfragen mit meist ähnlicher Last effizient ist was bei Frontend Anfragen der Fall ist, während Least Connections für Backend-Server mit unterschiedlich großen und variierenden Requests die Antwortzeiten optimiert und die Ressourcennutzung verbessert. @article @geeksforgeeksNetworkLoad
 
-Für die Backend Upstream Gruppe sorgt NGINX-Failover dafür, dass Anfragen automatisch auf andere Instanzen weitergeleitet werden, wenn eine Backend-Instanz fehlschlägt oder nicht antwortet:
+Für die Backend Upstream Gruppe sorgt ein in NGINX implementierter Failover dafür, dass Anfragen automatisch auf andere Instanzen weitergeleitet werden, wenn eine Backend Instanz fehlschlägt oder nicht antwortet:
 ```conf
 location /api/ {
     proxy_pass http://backend;
@@ -149,12 +149,12 @@ location /api/ {
 ```
 Damit wird die Verfügbarkeit der API auch bei Ausfällen einzelner Backend-Server gewährleistet.
 
-Die Log Weiterleitung von Filebeat zu Logstash wurde der Stream-Modus von NGINX verwendet, wodurch eingehende TCP Verbindungen ebenfalls auf mehrere Logstash Instanzen verteilt werden.
+Die Log Weiterleitung von Filebeat zu Logstash wurde der "Stream" Modus von NGINX verwendet, wodurch eingehende TCP Verbindungen ebenfalls auf mehrere Logstash Instanzen verteilt werden.
 
 == Schwierigkeiten & Lösungen
 
 === Vue.js SPA - NGINX
-Bei der Bereitstellung der Vue.js-Frontend-Applikation als Single Page Application (SPA) in Kombination mit NGINX traten typische Routing-Probleme auf: Standardmäßig versucht NGINX, Anfragen direkt auf Dateien im Dateisystem zuzuordnen, was bei SPA-Routen zu „404 Not Found“-Fehlern führen kann. Dieses Problem wurde durch eine angepasste NGINX-Konfiguration gelöst, die innerhalb des Vue Docker-Images genutzt wird:
+Bei der Bereitstellung der Vue.js-Frontend-Applikation als Single Page Application (SPA) in Kombination mit NGINX traten typische Routing-Probleme auf: Standardmäßig versucht NGINX, Anfragen direkt auf Dateien im Dateisystem zuzuordnen, was bei SPA-Routen zu „404 Not Found“ Fehlern führen kann. Dieses Problem wurde durch eine angepasste NGINX-Konfiguration gelöst, die innerhalb des Vue Docker-Images genutzt wird:
 
 ```nginx
 server {
@@ -166,21 +166,21 @@ server {
     }
 }
 ```
-"try_files" sorgt dafür, dass alle nicht vorhandenen Pfade auf index.html umgeleitet werden, sodass das Vue-Routing korrekt funktioniert. Dadurch konnten die SPA-Routen zuverlässig aufgelöst und die Frontend-Anwendung wie vorgesehen bereitgestellt werden. @shapeOptimizingNginx
+"try_files" sorgt dafür, dass alle nicht vorhandenen Pfade auf index.html umgeleitet werden, sodass das Vue-Routing korrekt funktioniert. Dadurch konnten die SPA-Routen zuverlässig aufgelöst und die Frontend Anwendung wie vorgesehen bereitgestellt werden. @shapeOptimizingNginx
 
 === Datenbank-Initialisierung Race Condition
 
-Beim Betrieb von drei Spring-Boot-Instanzen gleichzeitig kam es zu einer Race Condition: Alle Instanzen versuchten beim Start die Datenbank in PostgreSQL zu initialisieren. Dadurch konnten Inkonsistenzen oder Fehler beim Anlegen von Tabellen und Schemata entstehen.
+Beim Betrieb von drei Spring Boot Instanzen gleichzeitig kam es zu einer Race Condition: Alle Instanzen versuchten beim Start die Datenbank in PostgreSQL zu initialisieren. Dadurch konnten Inkonsistenzen oder Fehler beim Anlegen von Tabellen und Schemata entstehen.
 
-Die Lösung bestand darin, ein SQL-Initialisierungsfile beim Start des PostgreSQL-Docker-Containers zu verwenden, das das benötigte Schema einmalig anlegt. Auf diese Weise wird die Datenbank sauber initialisiert, ohne das dies von Spring Boots Seite aus geschieht.
+Die Lösung bestand darin, ein SQL-Initialisierungsfile beim Start des PostgreSQL Docker Containers zu verwenden, das das benötigte Schema einmalig anlegt. Auf diese Weise wird die Datenbank sauber initialisiert, ohne das dies von Spring Boots Seite aus geschieht.
 
 === Kommunikation mit Macvlan-Netzwerken
 
-Ein weiteres Problem trat beim Einsatz von Docker-Macvlan Netzwerken auf. Standardmäßig können Container in einem Macvlan Netz nicht direkt mit dem Host kommunizieren. Dies liegt daran, dass Macvlan eine separate virtuelle Netzwerkschnittstelle erstellt, die auf Ebene von Layer 2 arbeitet und dem Container eine eigene MAC-Adresse zuweist. Der Host selbst ist dabei jedoch nicht Teil der gleichen Broadcast Domaine, da er die Pakete lediglich weiterleitet, aber keine eigene Präsenz im Macvlan Segment besitzt. Für die Container wirkt der Host daher wie ein externer Knoten außerhalb des Netzes, was die direkte Kommunikation verhindert.
+Ein weiteres Problem trat beim Einsatz von Docker-Macvlan Netzwerken auf. Standardmäßig können Container in einem Macvlan Netz nicht direkt mit dem Host kommunizieren. Dies liegt daran, dass Macvlan eine separate virtuelle Netzwerkschnittstelle erstellt, die auf Ebene von Layer 2 arbeitet und dem Container eine eigene MAC-Adresse zuweist. Der Host selbst ist bei Verwendung des Macvlan Netzwerkmodus nicht Teil der gleichen Broadcast-Domäne wie die Container, da er keine eigene MAC-Adresse innerhalb dieses Segments besitzt. Er leitet die Pakete lediglich weiter, ohne selbst als Kommunikationspartner im Macvlan Netzwerk aufzutreten. Für die Container erscheint der Host daher wie ein externer Knoten außerhalb des Netzes, was eine direkte Kommunikation mit ihm verhindert.
 
-Diese Einschränkung erschwerte die Integration der Honeypot-Umgebung erheblich. So war es beispielsweise nicht möglich, von außen (vom Host) auf die Honeypots zuzugreifen oder das Frontend im Browser zu öffnen. Praktisch bedeutete dies, dass die Container zwar untereinander kommunizieren konnten, die Interaktion mit dem Host jedoch blockiert war.
+Diese Einschränkung erschwerte die Integration der Honeypot Umgebung erheblich. So war es beispielsweise nicht möglich, von außen (vom Host) auf die Honeypots zuzugreifen oder das Frontend im Browser zu öffnen. Praktisch bedeutete dies, dass die Container zwar untereinander kommunizieren konnten, die Interaktion mit dem Host jedoch blockiert war.
 
-Die Lösung bestand darin, ein sogenanntes Shim-Netzwerk zu konfigurieren, um die Kommunikation zwischen Host und Macvlan-Containern zu ermöglichen. Dabei wurden die Macvlan-Netzwerke so erweitert, dass der Host explizit eine eigene Adresse innerhalb des jeweiligen Subnetzes erhielt. In Docker wurde dies über die Option --aux-address umgesetzt:
+Die Lösung bestand darin, ein sogenanntes "Shim" Netzwerk zu konfigurieren, um die Kommunikation zwischen Host und Macvlan Containern zu ermöglichen. Dabei wurden die Macvlan Netzwerke so erweitert, dass der Host explizit eine eigene Adresse innerhalb des jeweiligen Subnetzes erhielt. In Docker wurde dies über die Option --aux-address umgesetzt:
 
 ```sh
 # Shim net für internal-net (Frontend/Backend) 
@@ -191,7 +191,7 @@ docker network create -d macvlan \
   -o parent=veth0 \
   honeypotharbor-internal-network 
 ```
-Die --aux-address reserviert dabei eine feste IP-Adresse für den Host im Macvlan-Subnetz, sodass er wie ein regulärer Netzwerkteilnehmer behandelt wird. Zusätzlich wurde auf dem Host eine direkte Macvlan-Schnittstelle eingerichtet, um sicherzustellen, dass Pakete korrekt geroutet werden:
+Die --aux-address reserviert dabei eine feste IP-Adresse für den Host im Macvlan Subnetz, sodass er wie ein regulärer Netzwerkteilnehmer behandelt wird. Zusätzlich wurde auf dem Host eine direkte Macvlan Schnittstelle eingerichtet, um sicherzustellen, dass Pakete korrekt geroutet werden:
 ```sh
 echo "Create internal Macvlan shim for Host-access."
 sudo ip link add internal-net link veth0 type macvlan mode bridge
@@ -212,9 +212,9 @@ Durch diese Maßnahmen konnte der Host sowohl Anfragen an die Honeypots als auch
 
 Ein grundsätzliches Problem bei der Nutzung von virtuellen LAN-Netzwerken (VLAN) liegt in der Funktionsweise von Macvlan. Um Macvlan in einem Projekt aufzusetzen, ist es notwendig, dass die Netzwerkhardware den "Promiscuous Mode" unterstützt. @dockerMacvlan Dieser Modus funktioniert meistens nicht oder mit starken Einschränkungen mit Netzwerkhardware, die kabellos operiert (z.B. WLAN-Netzwerkkarten). @wiresharkWifiCapture Promiscuous Mode funktioniert realistisch nur mit physischer Ethernet-Hardware.
 
-Diese Problematik wirkt sich maßgeblich auf den Entwicklungsprozess von Honeypot Harbor aus, denn dieses Projekt erfordert das Aufsetzen mehrerer voneinander getrennten Netzwerke. Dies wird benötigt, um das "attacker-net", in welchem die Honeypots drinnen sind, von dem "internal-net", welches die Auswertungssoftware zu den Honeypots beinhaltet, zu separieren. Da aber nicht alle an HoneypotHarbor Mitwirkenden über Arbeitshardware mit Ethernetanschluss verfügen, muss eine Möglichkeit gefunden werden, die physische Ethernet-Schnittstelle digital zu simulieren.
+Diese Problematik wirkt sich maßgeblich auf den Entwicklungsprozess von Honeypot Harbor aus, denn dieses Projekt erfordert das Aufsetzen mehrerer voneinander getrennten Netzwerke. Dies wird benötigt, um das "attacker-net", in welchem die Honeypots drinnen sind, von dem "internal-net", welches die Auswertungssoftware zu den Honeypots beinhaltet, zu separieren. Da aber nicht alle an Honeypot Harbor Mitwirkenden über Arbeitshardware mit Ethernetanschluss verfügen, muss eine Möglichkeit gefunden werden, die physische Ethernet Schnittstelle digital zu simulieren.
 
-Hier kommt die veth-Technologie ins Spiel. Mit veth sollen virtuelle Ethernet-Geräte dargestellt werden. @vethManPage Dabei wird immer ein veth-Paar erstellt (veth0 und veth1). Dazu wurde das ursprüngliche Startup-Shellskript ganz oben um den folgenden Abschnitt ergänzt:
+Hier kommt die veth-Technologie ins Spiel. Mit veth sollen virtuelle Ethernet Geräte dargestellt werden. @vethManPage Dabei wird immer ein veth-Paar erstellt (veth0 und veth1). Dazu wurde das ursprüngliche Startup-Shellskript ganz oben um den folgenden Abschnitt ergänzt:
 
 ```sh
 # Create a veth pair if it does not exist
@@ -226,12 +226,12 @@ if ! ip link show veth0 &>/dev/null; then
 fi
 ```
 
-Hier wird das veth-Paar erstellt und aufgesetzt, falls es noch nicht existiert. Im Rest des Skripts muss jetzt jegliche Erwähnung von eth0 (Netzwerkinterface für einen physischen Ethernetanschluss) durch veth0 ersetzt werden. Damit ist das Startup-Skript nun angepasst auf Geräte ohne Ethernetanschluss. Da der Ansatz mit veth allerdings eher als Notlösung für den Entwicklungsprozess gedacht war, wurde das ursprüngliche Skript "startup.sh" behalten und ein neues Skript "veth-startup.sh" mit den eben genannten Änderungen angelegt.
+Hier wird das veth-Paar erstellt und aufgesetzt, falls es noch nicht existiert. Im Rest des Skripts muss jetzt jegliche Erwähnung von eth0 (Netzwerkinterface für einen physischen Ethernetanschluss) durch veth0 ersetzt werden. Damit ist das Startup Skript nun angepasst auf Geräte ohne Ethernetanschluss. Da der Ansatz mit veth allerdings eher als Notlösung für den Entwicklungsprozess gedacht war, wurde das ursprüngliche Skript "startup.sh" behalten und ein neues Skript "veth-startup.sh" mit den eben genannten Änderungen angelegt.
 
 Analog dazu fungiert das Skript "veth-shutdown.sh" Skript, welches unteranderem das vorher angelegte veth-Paar wieder löscht.
 
 == Mögliche Alternativen
-Anstelle von Filebeat hätte man auch einen eigenen Service schreiben können, der die Logs von den Cowrie Containern einsammelt und weiterreicht zur direkten Verarbeitung. Alternativ wäre der TIG-Stack (Telegraf, InfluxDB, Grafana) anstelle des ELK Stacks möglich gewesen, der insbesondere für zeitserielle Daten hohe Effizienz und leistungsfähige Visualisierung bietet. Bei der Datenbank wären neben PostgreSQL auch MySQL oder MariaDB denkbar gewesen: beide hätte ebenfalls zuverlässig relationale Strukturen für Benutzer- und Rollenmanagement abgebildet. Für das Backend hätten auch Frameworks wie Django oder Flask (Python) genutzt werden können, die schnelle Implementierung relationaler Modelle und APIs erlauben und wahrscheinlich auch weniger Einstiegshürden als Spring Boot mit sich gebracht hätten. Für das Frontend wären alternativ React oder Angular möglich gewesen, die durch große Community Unterstützung, vorgefertigte Komponentenbibliotheken und allgemein wieter Verbreitung ebenfalls leistungsfähige UI Implementierungen erlauben.
+Anstelle von Filebeat hätte man auch einen eigenen Service schreiben können, der die Logs von den Cowrie Containern einsammelt und weiterreicht zur direkten Verarbeitung. Alternativ wäre der TIG-Stack (Telegraf, InfluxDB, Grafana) anstelle des ELK Stacks möglich gewesen, der insbesondere für zeitserielle Daten hohe Effizienz und leistungsfähige Visualisierung bietet. Bei der Datenbank wären neben PostgreSQL auch MySQL oder MariaDB denkbar gewesen: beide hätte ebenfalls zuverlässig relationale Strukturen für Benutzer- und Rollenmanagement abgebildet. Für das Backend hätten auch Frameworks wie Django oder Flask (Python) genutzt werden können, die schnelle Implementierung einer API erlauben und wahrscheinlich auch weniger Einstiegshürden als Spring Boot mit sich gebracht hätten. Für das Frontend wären alternativ React oder Angular möglich gewesen, die durch große Community Unterstützung, vorgefertigte Komponentenbibliotheken und allgemein wieter Verbreitung ebenfalls leistungsfähige UI Implementierungen erlauben.
 
 #pagebreak()
 
@@ -239,11 +239,11 @@ Anstelle von Filebeat hätte man auch einen eigenen Service schreiben können, d
 == Lessons Learned
 
 Im Verlauf der Projektarbeit konnten insbesondere auf technischer Ebene wesentliche Erkenntnisse gewonnen werden.
-Ein zentrales Lernfeld stellte der Umgang mit Container-Netzwerken dar. Durch die Konfiguration von macvlan sowie den damit verbundenen veth / shim Netwerk Konzepten unter Linux wurde ein vertieftes Verständnis für die Netzwerkarchitektur in Docker-Umgebungen erlangt. Dies ermöglichte die gezielte Anbindung des Honeypot-Netzwerks an die bestehende Infrastruktur und schuf die Grundlage für die Trennung von "Attacker"- und "Internal"-Netzwerken.
+Ein zentrales Lernfeld stellte der Umgang mit Container Netzwerken dar. Durch die Konfiguration von macvlan sowie den damit verbundenen veth / shim Netwerk Konzepten unter Linux wurde ein vertieftes Verständnis für die Netzwerkarchitektur in Docker Umgebungen erlangt. Dies ermöglichte die gezielte Anbindung des Honeypot Netzwerks an die bestehende Infrastruktur und schuf die Grundlage für die Trennung von "Attacker"- und "Internal"- Netzwerken.
 
 Darüber hinaus wurden erstmals Aspekte der Ausfallsicherheit und des Load-Balancings systematisch betrachtet. Durch den Einsatz von NGINX zur Lastverteilung auf mehrere Logstash, Frontend und Backend Instanzen konnte nachvollzogen werden, wie Skalierbarkeit und Fehlertoleranz praktisch umgesetzt werden kann.
 
-Ein weiterer Schwerpunkt lag im Bereich der API-Entwicklung und -Absicherung. Hierbei wurde insbesondere erlernt wie man eine API mit verschiedenen Techniken (API Keys, Role-Based Access, JWT) absichert. Besonders auch der strukturierte Aufbau in Controller, Services und Data Transfer Objects sorgte für Übersichtlichkeit.
+Ein weiterer Schwerpunkt lag im Bereich der API- Entwicklung und Absicherung. Hierbei wurde insbesondere erlernt wie man eine API mit verschiedenen Techniken (API Keys, Role-Based Access, JWT) absichert. Besonders auch der strukturierte Aufbau in Controller, Services und Data Transfer Objects sorgte für Übersichtlichkeit.
 
 Durch das Debugging von Requests und Responses mit unteranderem Burp Suite konnte ein tieferes Verständnis für die Funktionsweise der API und die Interaktion zwischen Client und Server gewonnen werden. Dies ermöglichte nicht nur die Identifikation und Behebung von Fehlern, sondern auch die Analyse potenzieller Sicherheitsrisiken und die Optimierung der Kommunikationsprozesse.
 
@@ -253,7 +253,7 @@ Die Einrichtung des macvlan-Netzwerks stellte zu Beginn eine wesentliche Hürde 
 
 Darüber hinaus wurde die Systemausführung auf lokalen Entwicklungsrechnern als limitierender Faktor identifiziert. Die Vielzahl parallel laufender Container führte zu hoher Ressourcenauslastung, langen Startzeiten und eingeschränkter Testbarkeit. Eine optimierte Testumgebung, konnte im Projektzeitraum nicht umgesetzt werden, sollte jedoch in zukünftigen Arbeiten berücksichtigt werden, da gerade gegen Ende Elastic Search durch die hohe RAM Nutzung einige Probleme bereitete (ERROR: Elasticsearch died while starting up, with exit code 137).
 
-Auch im Bereich des Frontends zeigte sich, dass die performante Darstellung großer Datenmengen komplexer ist als zunächst angenommen. Hier besteht für künftige Entwicklungen die Möglichkeit, durch effizientere Polling Strategien, Pagination oder Streaming-Ansätze Verbesserungen zu erzielen.
+Auch im Bereich des Frontends zeigte sich, dass die performante Darstellung großer Datenmengen komplexer ist als zunächst angenommen. Hier besteht für künftige Entwicklungen die Möglichkeit, durch effizientere Polling Strategien, oder Pagination Verbesserungen zu erzielen.
 
 Die Handhabung von Fehlern und Ausnahmen im Backend erwies sich ebenfalls als herausfordernd. Es wurde deutlich, dass eine frühzeitige Implementierung von Custom Exceptions sowie eine einheitliche Fehlerstruktur entscheidend für ein stabiles Zusammenspiel mit dem Frontend sind. Diese Aspekte wurden im Projektverlauf nur teilweise berücksichtigt, sodass sich hier ein erhebliches Verbesserungspotenzial abzeichnet.
 
